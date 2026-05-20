@@ -171,7 +171,393 @@ VBA票据打印宏 - 代码说明
 适用于需要批量打印标准化票据、标签或产品标识的场景，特别适合多产品组合的标签打印需求。
 -------------------------------------------------------------------------------------------------------------
 
-[此处省略VBA代码，保持原样]
+Attribute VB_Name = "NewMacros"
+Public 纸张 As Integer
+Sub pg_set(份数)
+Dim 花_日期, 肉_日期, 斑_日期, 水_日期 As String
+If UserForm1.OptionButton1.Value = True Then 纸张 = 1
+If UserForm1.OptionButton2.Value = True Then 纸张 = 2
+If 纸张 = 1 Then
+With ActiveDocument.PageSetup
+.Orientation = wdOrientPortrait
+.TopMargin = CentimetersToPoints(1)
+.BottomMargin = CentimetersToPoints(1)
+.LeftMargin = CentimetersToPoints(1)
+.RightMargin = CentimetersToPoints(1)
+.PageWidth = CentimetersToPoints(7.5)
+.PageHeight = CentimetersToPoints(13)
+.VerticalAlignment = wdAlignVerticalCenter
+End With
+End If
+If 纸张 = 2 Then
+With ActiveDocument.PageSetup
+.Orientation = wdOrientPortrait
+.TopMargin = CentimetersToPoints(1)
+.BottomMargin = CentimetersToPoints(1)
+.LeftMargin = CentimetersToPoints(0.5)
+.RightMargin = CentimetersToPoints(0.5)
+.PageWidth = CentimetersToPoints(10)
+.PageHeight = CentimetersToPoints(11.5)
+.VerticalAlignment = wdAlignVerticalCenter
+End With
+End If
+Set docRange = ActiveDocument.Content
+docRange.Delete
+Dim OB_11, OB_12, OB_13, OB_14, OB_21, OB_22, OB_23, OB_24, OB_31, OB_32, OB_33, OB_34, OB_41, OB_42, OB_43, OB_44, OB_51, OB_52, OB_53, OB_54 As String
+OB_11 = "240930LN": OB_12 = "240926LN": OB_13 = "240923LN": OB_14 = "240916LN"
+OB_21 = "240303FC": OB_22 = "240303FC": OB_23 = "240303FC": OB_24 = ""
+OB_31 = "240926LN": OB_32 = "240926LN": OB_33 = "240926LN": OB_34 = ""
+OB_41 = "240820LN": OB_42 = "240618LN": OB_43 = "240926LN": OB_44 = ""
+OB_51 = "241016LN"
+UserForm1.OptionButton11.Caption = OB_11
+UserForm1.OptionButton12.Caption = OB_12
+UserForm1.OptionButton13.Caption = OB_13
+UserForm1.OptionButton14.Caption = OB_14
+UserForm1.OptionButton21.Caption = OB_21
+UserForm1.OptionButton22.Caption = OB_22
+UserForm1.OptionButton23.Caption = OB_23
+UserForm1.OptionButton24.Caption = OB_24
+UserForm1.OptionButton31.Caption = OB_31
+UserForm1.OptionButton32.Caption = OB_32
+UserForm1.OptionButton33.Caption = OB_33
+UserForm1.OptionButton34.Caption = OB_34
+UserForm1.OptionButton41.Caption = OB_41
+UserForm1.OptionButton42.Caption = OB_42
+UserForm1.OptionButton43.Caption = OB_43
+UserForm1.OptionButton44.Caption = OB_44
+UserForm1.OptionButton51.Caption = OB_51
+UserForm1.OptionButton52.Caption = OB_52
+UserForm1.OptionButton53.Caption = OB_53
+UserForm1.OptionButton54.Caption = OB_54
+UserForm1.Show
+Dim 花, 肉, 斑, 水, 芳 As Boolean
+花 = False: 肉 = False: 斑 = False: 水 = False: 芳 = False
+If UserForm1.OptionButton11.Value = True Then 花_日期 = OB_11: 花 = True
+If UserForm1.OptionButton12.Value = True Then 花_日期 = OB_12: 花 = True
+If UserForm1.OptionButton13.Value = True Then 花_日期 = OB_13: 花 = True
+If UserForm1.OptionButton14.Value = True Then 花_日期 = OB_14: 花 = True
+If UserForm1.OptionButton21.Value = True Then 肉_日期 = OB_21: 肉 = True
+If UserForm1.OptionButton22.Value = True Then 肉_日期 = OB_22: 肉 = True
+If UserForm1.OptionButton23.Value = True Then 肉_日期 = OB_23: 肉 = True
+If UserForm1.OptionButton24.Value = True Then 肉_日期 = OB_24: 肉 = True
+If UserForm1.OptionButton31.Value = True Then 斑_日期 = OB_31: 斑 = True
+If UserForm1.OptionButton32.Value = True Then 斑_日期 = OB_32: 斑 = True
+If UserForm1.OptionButton33.Value = True Then 斑_日期 = OB_33: 斑 = True
+If UserForm1.OptionButton34.Value = True Then 斑_日期 = OB_34: 斑 = True
+If UserForm1.OptionButton41.Value = True Then 水_日期 = OB_41: 水 = True
+If UserForm1.OptionButton42.Value = True Then 水_日期 = OB_42: 水 = True
+If UserForm1.OptionButton43.Value = True Then 水_日期 = OB_43: 水 = True
+If UserForm1.OptionButton44.Value = True Then 水_日期 = OB_44: 水 = True
+If UserForm1.OptionButton51.Value = True Then 芳_日期 = OB_51: 芳 = True
+If UserForm1.OptionButton52.Value = True Then 芳_日期 = OB_52: 芳 = True
+If UserForm1.OptionButton53.Value = True Then 芳_日期 = OB_53: 芳 = True
+If UserForm1.OptionButton54.Value = True Then 芳_日期 = OB_54: 芳 = True
+If UserForm1.CheckBox2.Value = True Then xin = "新"
+If 花 = True And 肉 = True And 斑 = False And 水 = True And 芳 = True Then
+    Set docRange = ActiveDocument.Content
+    docRange.Delete
+    Selection.TypeText Text:="花" & "3" & 花_日期 & Chr(13)
+    Selection.TypeText Text:="肉" & "3" & 肉_日期 & Chr(13)
+    Selection.TypeText Text:="水" & "3" & 水_日期 & Chr(13)
+    Selection.TypeText Text:="芳" & "1" & 芳_日期 & Chr(13)
+    Selection.TypeText Text:="270|13" & xin & "三剑客"
+    Call siPin
+    GoTo print_line
+End If
+UserForm1.OptionButton51.Enabled = False
+UserForm1.OptionButton52.Enabled = False
+UserForm1.OptionButton53.Enabled = False
+UserForm1.OptionButton54.Enabled = False
+If 花 = True And 肉 = False And 斑 = False And 水 = False Then
+    Selection.TypeText Text:="單" & Chr(13)
+    Selection.TypeText Text:="花" & "4" & Chr(13)
+    Selection.TypeText Text:=xin & Chr(13)
+    Selection.TypeText Text:=花_日期 & Chr(13)
+    Selection.TypeText Text:="320|9-1"
+    Call danPin
+End If
+If 花 = False And 肉 = True And 斑 = False And 水 = False Then
+    Selection.TypeText Text:="單" & Chr(13)
+    Selection.TypeText Text:="肉" & "4" & Chr(13)
+    Selection.TypeText Text:=xin & Chr(13)
+    Selection.TypeText Text:=肉_日期 & Chr(13)
+    Selection.TypeText Text:="480|8"
+    Call danPin
+End If
+If 花 = False And 肉 = False And 斑 = True And 水 = False Then
+    Selection.TypeText Text:="單" & Chr(13)
+    Selection.TypeText Text:="斑" & "4" & Chr(13)
+    Selection.TypeText Text:=xin & Chr(13)
+    Selection.TypeText Text:=斑_日期 & Chr(13)
+    Selection.TypeText Text:="240|5-1"
+    Call danPin
+End If
+If 花 = False And 肉 = False And 斑 = False And 水 = True Then
+    Selection.TypeText Text:="單" & Chr(13)
+    Selection.TypeText Text:="水" & "4" & Chr(13)
+    Selection.TypeText Text:=xin & Chr(13)
+    Selection.TypeText Text:=水_日期 & Chr(13)
+    Selection.TypeText Text:="540|2"
+    Call danPin
+End If
+If 花 = True And 肉 = True And 斑 = False And 水 = False Then
+    Selection.TypeText Text:="花" & "4" & Chr(13)
+    Selection.TypeText Text:="肉" & "5" & Chr(13)
+    Selection.TypeText Text:=花_日期 & Chr(13)
+    Selection.TypeText Text:=肉_日期 & Chr(13)
+    Selection.TypeText Text:="数量|箱号" & xin
+    Call shuangPin
+End If
+If 花 = True And 肉 = False And 斑 = True And 水 = False Then
+    Selection.TypeText Text:="花" & "4" & Chr(13)
+    Selection.TypeText Text:="斑" & "5" & Chr(13)
+    Selection.TypeText Text:=花_日期 & Chr(13)
+    Selection.TypeText Text:=斑_日期 & Chr(13)
+    Selection.TypeText Text:="数量|箱号" & xin
+    Call shuangPin
+End If
+If 花 = True And 肉 = False And 斑 = False And 水 = True Then
+    Selection.TypeText Text:="花" & "4" & Chr(13)
+    Selection.TypeText Text:="水" & "5" & Chr(13)
+    Selection.TypeText Text:=花_日期 & Chr(13)
+    Selection.TypeText Text:=水_日期 & Chr(13)
+    Selection.TypeText Text:="数量|箱号" & xin
+    Call shuangPin
+End If
+If 花 = False And 肉 = True And 斑 = True And 水 = False Then
+    Selection.TypeText Text:="肉" & "4" & Chr(13)
+    Selection.TypeText Text:="斑" & "5" & Chr(13)
+    Selection.TypeText Text:=肉_日期 & Chr(13)
+    Selection.TypeText Text:=斑_日期 & Chr(13)
+    Selection.TypeText Text:="数量|箱号" & xin
+    Call shuangPin
+End If
+If 花 = False And 肉 = True And 斑 = False And 水 = True Then
+    Selection.TypeText Text:="肉" & "4" & Chr(13)
+    Selection.TypeText Text:="水" & "5" & Chr(13)
+    Selection.TypeText Text:=肉_日期 & Chr(13)
+    Selection.TypeText Text:=水_日期 & Chr(13)
+    Selection.TypeText Text:="数量|箱号" & xin
+    Call shuangPin
+End If
+If 花 = False And 肉 = False And 斑 = True And 水 = True Then
+    Selection.TypeText Text:="斑" & "4" & Chr(13)
+    Selection.TypeText Text:="水" & "5" & Chr(13)
+    Selection.TypeText Text:=斑_日期 & Chr(13)
+    Selection.TypeText Text:=水_日期 & Chr(13)
+    Selection.TypeText Text:="数量|箱号" & xin
+    Call shuangPin
+End If
+If 花 = True And 肉 = True And 斑 = True And 水 = False Then
+    Selection.TypeText Text:="花" & "5" & 花_日期 & Chr(13)
+    Selection.TypeText Text:="肉" & "5" & 肉_日期 & Chr(13)
+    Selection.TypeText Text:="斑" & "4" & 斑_日期 & Chr(13)
+    Selection.TypeText Text:="168|11" & xin
+    Call sanPin
+End If
+If 花 = True And 肉 = True And 斑 = False And 水 = True Then
+    Selection.TypeText Text:="花" & "5" & 花_日期 & Chr(13)
+    Selection.TypeText Text:="肉" & "5" & 肉_日期 & Chr(13)
+    Selection.TypeText Text:="水" & "4" & 水_日期 & Chr(13)
+    Selection.TypeText Text:="数量|箱号" & xin
+    Call sanPin
+End If
+If 花 = True And 肉 = False And 斑 = True And 水 = True Then
+    Selection.TypeText Text:="花" & "5" & 花_日期 & Chr(13)
+    Selection.TypeText Text:="斑" & "5" & 斑_日期 & Chr(13)
+    Selection.TypeText Text:="水" & "4" & 水_日期 & Chr(13)
+    Selection.TypeText Text:="数量|箱号" & xin
+    Call sanPin
+End If
+If 花 = False And 肉 = True And 斑 = True And 水 = True Then
+    Selection.TypeText Text:="肉" & "5" & 肉_日期 & Chr(13)
+    Selection.TypeText Text:="斑" & "5" & 斑_日期 & Chr(13)
+    Selection.TypeText Text:="水" & "4" & 水_日期 & Chr(13)
+    Selection.TypeText Text:="数量|箱号" & xin
+    Call sanPin
+End If
+If 花 = True And 肉 = True And 斑 = True And 水 = True Then
+    Selection.TypeText Text:="花" & "5" & 花_日期 & Chr(13)
+    Selection.TypeText Text:="肉" & "5" & 肉_日期 & Chr(13)
+    Selection.TypeText Text:="斑" & "4" & 斑_日期 & Chr(13)
+    Selection.TypeText Text:="水" & "5" & 水_日期 & Chr(13)
+    Selection.TypeText Text:="168|11" & xin
+    Call siPin
+End If
+print_line:
+Call FormatText新票
+Selection.EndKey Unit:=wdStory
+If 份数 >= 1 Then
+    MsgBox 份数
+    ActivePrinter = "Canon iP2700 series"
+    ActiveDocument.PrintOut Range:=wdPrintCurrentPage
+    ActiveDocument.PrintOut Copies:=份数
+End If
+End Sub
+Sub danPin()
+For iRow = 1 To 2
+    Set myRange = ActiveDocument.Paragraphs(iRow).Range
+    With myRange.Font
+     .Bold = True
+     .Name = "微软雅黑"
+     .Size = 72
+     End With
+    With ActiveDocument.Paragraphs(iRow).Range.ParagraphFormat
+    .LineSpacingRule = wdLineSpaceExactly
+    .LineSpacing = 80
+    .Alignment = wdAlignParagraphCenter
+    End With
+Next iRow
+ActiveDocument.Paragraphs(1).Range.ParagraphFormat.LineUnitBefore = 2
+If 纸张 = 2 Then
+    ActiveDocument.Paragraphs(1).Range.ParagraphFormat.LineUnitBefore = 0
+    ActiveDocument.Paragraphs(1).Range.ParagraphFormat.SpaceBefore = 0
+End If
+Set myRange = ActiveDocument.Paragraphs(2).Range
+With myRange.Characters(2)
+    .Font.Bold = False
+    .Font.Superscript = wdToggle
+    .Font.Name = "仿宋"
+    .ParagraphFormat.CharacterUnitFirstLineIndent = 0.5
+End With
+For iRow = 3 To 5
+    Set myRange = ActiveDocument.Paragraphs(iRow).Range
+    With myRange.Font
+     .Bold = False
+     .Name = "仿宋"
+     .Size = 23
+     End With
+    With ActiveDocument.Paragraphs(iRow).Range.ParagraphFormat
+    .LineSpacingRule = wdLineSpaceExactly
+    .LineSpacing = 36
+    .Alignment = wdAlignParagraphCenter
+    End With
+Next iRow
+End Sub
+Sub shuangPin()
+For iRow = 1 To 2
+    Set myRange = ActiveDocument.Paragraphs(iRow).Range
+    With myRange.Font
+     .Bold = True
+     .Name = "微软雅黑"
+     .Size = 72
+     End With
+    With myRange.ParagraphFormat
+    .LineSpacingRule = wdLineSpaceExactly
+    .LineSpacing = 80
+    .Alignment = wdAlignParagraphCenter
+    End With
+    With myRange.Characters(2)
+    .Font.Bold = False
+    .Font.Superscript = wdToggle
+    .Font.Name = "仿宋"
+    .ParagraphFormat.CharacterUnitFirstLineIndent = 0.5
+    End With
+Next iRow
+ActiveDocument.Paragraphs(1).Range.ParagraphFormat.LineUnitBefore = 2
+If 纸张 = 2 Then
+    ActiveDocument.Paragraphs(1).Range.ParagraphFormat.LineUnitBefore = 0
+    ActiveDocument.Paragraphs(1).Range.ParagraphFormat.SpaceBefore = 0
+End If
+For iRow = 3 To 5
+    Set myRange = ActiveDocument.Paragraphs(iRow).Range
+    With myRange.Font
+     .Bold = False
+     .Name = "仿宋"
+     .Size = 23
+     End With
+    With ActiveDocument.Paragraphs(iRow).Range.ParagraphFormat
+    .LineSpacingRule = wdLineSpaceExactly
+    .LineSpacing = 36
+    .Alignment = wdAlignParagraphCenter
+    End With
+Next iRow
+End Sub
+Sub sanPin()
+With ActiveDocument.PageSetup
+.LeftMargin = CentimetersToPoints(0.5)
+.RightMargin = CentimetersToPoints(0.5)
+End With
+For iRow = 1 To 4
+    Set myRange = ActiveDocument.Paragraphs(iRow).Range
+    With myRange.Font
+     .Bold = False
+     .Name = "仿宋"
+     .Size = 24
+     End With
+    With ActiveDocument.Paragraphs(iRow).Range.ParagraphFormat
+    .LineSpacingRule = wdLineSpaceExactly
+    .LineSpacing = 60
+    .Alignment = wdAlignParagraphCenter
+    If iRow < 4 Then
+        .BaseLineAlignment = wdBaselineAlignFarEast50
+    End If
+    End With
+    If iRow < 4 Then
+        With myRange.Characters(1).Font
+         .Bold = True
+         .Name = "微软雅黑"
+         .Size = 48
+         .Position = -3
+        End With
+        With myRange.Characters(2).Font
+         .Size = 48
+         .Superscript = wdToggle
+        End With
+    End If
+Next iRow
+End Sub
+Sub siPin()
+With ActiveDocument.PageSetup
+.LeftMargin = CentimetersToPoints(0.5)
+.RightMargin = CentimetersToPoints(0.5)
+End With
+For iRow = 1 To 5
+    Set myRange = ActiveDocument.Paragraphs(iRow).Range
+    With myRange.Font
+     .Bold = False
+     .Name = "仿宋"
+     .Size = 24
+     End With
+    With ActiveDocument.Paragraphs(iRow).Range.ParagraphFormat
+    .LineSpacingRule = wdLineSpaceExactly
+    .LineSpacing = 50
+    .Alignment = wdAlignParagraphCenter
+    End With
+Next iRow
+For iRow = 1 To 4
+    Set myRange = ActiveDocument.Paragraphs(iRow).Range.Characters(1)
+    With myRange.Font
+     .Bold = True
+     .Name = "微软雅黑"
+     .Size = 48
+    End With
+    Set myRange = ActiveDocument.Paragraphs(iRow).Range.Characters(2)
+    With myRange.Font
+     .Size = 48
+     .Superscript = wdToggle
+    End With
+Next iRow
+End Sub
+Sub FormatText新票()
+Dim findText As String
+findText = "新"
+With Selection.Find
+    .Text = findText
+    .Replacement.Text = ""
+    .Forward = True
+    .Wrap = wdFindContinue
+    .Format = True
+    .MatchCase = False
+    .MatchWholeWord = False
+    .MatchWildcards = False
+    .MatchSoundsLike = False
+    .MatchAllWordForms = False
+    While .Execute = True
+        Selection.Range.ModifyEnclosure Style:=wdEncloseStyleLarge, Symbol:=wdEnclosureCircle
+    Wend
+End With
+End Sub
   </pre>
 
 </div>
