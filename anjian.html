@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>按键精灵案例</title>
+<title>word_vba案例</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -11,12 +11,12 @@
   body {
     background: #ffffff;
     color: #212529;
-    font-size: 18px;          /* ✅ 字体大小，自己调 */
+    font-size: 18px;
     line-height: 1.9;
   }
 
   pre {
-    white-space: pre-wrap;    /* ✅ 自动换行 */
+    white-space: pre-wrap;
     word-break: break-word;
     font-family: Consolas, "Microsoft YaHei", monospace;
     background: #f8f9fa;
@@ -29,6 +29,82 @@
     font-weight: 600;
     border-left: 5px solid #000;
     padding-left: 10px;
+  }
+  
+  .video-container {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+  }
+  
+  /* 优化视频容器样式 */
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* 响应式视频容器 */
+  .responsive-video {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 比例 */
+    height: 0;
+    overflow: hidden;
+  }
+  
+  .responsive-video video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 保持比例，不拉伸 */
+  }
+  
+  /* 手机端优化 */
+  @media (max-width: 768px) {
+    .video-wrapper {
+      border-radius: 0;
+      margin: 0 -20px; /* 扩展到屏幕边缘 */
+      width: calc(100% + 40px);
+    }
+    
+    .responsive-video {
+      padding-bottom: 56.25%; /* 保持16:9比例 */
+    }
+    
+    /* 横屏提示 */
+    .landscape-hint {
+      display: block;
+      text-align: center;
+      padding: 10px;
+      background: #e9ecef;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  }
+  
+  /* 横屏样式 */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .video-wrapper {
+      max-height: 85vh;
+    }
+    
+    .responsive-video {
+      padding-bottom: 0;
+      height: 85vh;
+    }
+    
+    .responsive-video video {
+      object-fit: contain;
+      height: 100%;
+    }
   }
 </style>
 </head>
