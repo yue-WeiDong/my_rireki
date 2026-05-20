@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>按键精灵案例</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  body {
+    background: #ffffff;
+    color: #212529;
+    font-size: 18px;          /* ✅ 字体大小，自己调 */
+    line-height: 1.9;
+  }
+
+  pre {
+    white-space: pre-wrap;    /* ✅ 自动换行 */
+    word-break: break-word;
+    font-family: Consolas, "Microsoft YaHei", monospace;
+    background: #f8f9fa;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    border-left: 5px solid #000;
+    padding-left: 10px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container-fluid px-3 py-4">
+
+  <!-- 返回主页 -->
+  <a href="index.html" class="text-decoration-none text-dark small">← 返回主页</a>
+
+  <h1 class="mt-2">📄 按键精灵案例</h1>
+
+  <pre>
+一、脚本概述
+本套脚本基于按键精灵（Q语言）开发，用于自动化电商后台促销管理。通过读取Excel商品数据，模拟人工鼠标点击与键盘输入，批量完成促销活动的新建、配置、提交与结果校验，替代高频重复操作。
+
+二、核心功能
+
+功能模块
+读取excel中的商品ID、名称、库存、促销价、链接等字段；支持指定起始行与循环次数
+
+全流程自动化​
+新建促销→查询商品→填写信息→设置时间→保存提交→返回列表
+
+智能日历控制​
+动态计算日期在日历控件中的位置，支持跨月翻页、精确设置小时与分钟
+
+结果校验与日志​
+通过图片识别判断“创建成功”，记录失败行号、总耗时与执行次数
+
+异常处理​
+检测连续空行自动终止；促销价为0或空时中断脚本
+
+三、操作流程详解
+
+初始化：读取窗体参数（Excel路径、时间、行数等），绑定目标窗口句柄。
+
+循环执行：
+
+点击“新建促销”按钮
+
+进入商品选择页，输入商品ID并查询
+
+勾选商品，填写促销价、促销语、库存
+
+设置促销时间（日期+时分）
+
+点击保存，等待提交完成
+
+结果判断：识别“创建成功”提示，记录结果；失败则标记行号。
+
+收尾：关闭Excel，弹出执行统计（耗时、完成行数）。
+
+适用场景
+
+✅ 电商平台大促期间批量创建限时活动​
+
+✅ 每日/每周固定商品促销快速上架​
+
+✅ 减少运营人员重复操作，降低人为失误​
+
+✅ 无开放API的老旧后台系统自动化补位
+
+注意事项
+
+⚠️ 强依赖界面坐标：分辨率变化、弹窗遮挡、后台改版均可能导致脚本失效。
+
+⚠️ 无自动重试机制：单步失败会中断或标记，需人工介入。
+
+⚠️ Excel格式必须严格一致：列顺序不可变动，建议提前备份数据。
+
+⚠️ 运行期间禁止操作鼠标键盘：避免干扰后台点击。
+
+总结
+
+本脚本是一套针对固定界面电商后台的促销批量自动化解决方案，核心价值在于将数百次人工操作压缩为一次配置执行，显著提升效率与准确性，适用于标准化、高频次的促销管理场景。
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+sDate1 = Plugin.Sys.GetDateTime()
+Hwnd = Plugin.Window.MousePoint()
+EXCEL文件 = Form1.BrowseBox1.Path
+时间1 = Form1.InputBox1.Text
+小时_1 =Form1.InputBox2.Text
+分_1 = Form1.InputBox3.Text
+时间2 = Form1.InputBox4.Text
+小时_2= Form1.InputBox5.Text
+分_2 = Form1.InputBox6.Text
+行数 = Form1.InputBox7.Text
+次数 = Form1.InputBox8.Text
+促销语 = Form1.InputBox9.Text
+首行数=行数
+Call Plugin.Office.OpenXls(EXCEL文件)
+//Excel文件列标题判断
+//If Plugin.Office.ReadXls(1, 3, 1) = "商品ID" and  Plugin.Office.ReadXls(1, 3, 2) = "商品名称" and Plugin.Office.ReadXls(1, 3,3) = "可售库存"  and Plugin.Office.ReadXls(1, 3, 4) = "促销价"  Then 
+//    TracePrint "格式正确"
+//Else 
+//    MsgBox "请调整execl表"
+//    ExitScript
+//End If
+For 次数
+    //循环结束条件(连续出现三次为空的值，退出循环;如果只有一个空行跳过去;第5列为0跳过去)
+    If Plugin.Office.ReadXls(1, 行数, 1) = "" and Plugin.Office.ReadXls(1, 行数+1, 1) = "" and Plugin.Office.ReadXls(1, 行数+2, 1) = ""  Then 
+        call 结束提示()
+        ExitScript
+    ElseIf Plugin.Office.ReadXls(1, 行数, 1) = "" Then
+        行数 = 行数 + 1
+        //ElseIf Plugin.Office.ReadXls(1, 行数, 5) = "0" Then
+        //行数 = 行数 + 1
+    End If
+    if Plugin.Office.ReadXls(1, 行数, 1) = "" Then
+        行数 = 行数 + 1
+    End If
+    //		If 行数>=369 Then 
+    //		
+    //			时间1 ="2016-04-19"
+    //			小时_1 =0
+    //			分_1 = 5
+    //			
+    //			时间2 = "2016-04-21"
+    //			小时_2=0
+    //			分_2 = 0
+    //		
+    //		End If		
+    //		If  行数>=465 Then 
+    //		
+    //			时间1 ="2016-04-06"
+    //			小时_1 =0
+    //			分_1 = 5
+    //			
+    //			时间2 = "2016-04-07"
+    //			小时_2=0
+    //			分_2 = 0
+    //			
+    //		End If	
+    //
+    //		If  行数>=468 Then 
+    //		
+    //			时间1 ="2016-04-07"
+    //			小时_1 =0
+    //			分_1 = 5
+    //			
+    //			时间2 = "2016-04-08"
+    //			小时_2=0
+    //			分_2 = 0
+    //			
+    //		End If
+    //从新建到设置
+    //特定列值为1时，只设置为列为1的行
+    // 		If Plugin.Office.ReadXls(1, 行数, 8) = 1 Then 
+    // 		Call 主程序
+    // 		End if
+    Call 主程序
+    TracePrint "完成行数第" & 行数 & "行"
+    TracePrint "未成功结果" & 未成功结果       
+    行数 = 行数 + 1
+Next
+Call 结束提示()
+Sub 主程序
+    If 促销语 = "" Then 
+        促销语 = Plugin.Office.ReadXls(1, 2, 1)
+    End If
+    商品ID = Plugin.Office.ReadXls(1, 行数, 1)
+    商品名称 = Plugin.Office.ReadXls(1, 行数, 2)
+    可售库存 = Plugin.Office.ReadXls(1, 行数, 3)
+    If 可售库存 = 0 Then 
+        可售库存 = 2000
+    End If
+    促销价 = round(Plugin.Office.ReadXls(1, 行数, 4), 2)
+    If 促销价=0 or 促销价="" Then 
+        MsgBox "促销价不能为空或为0"
+        ExitScript
+    End If
+    链接 = Plugin.Office.ReadXls(1, 行数, 10)
+    '新建
+    i1=0
+    While i1=0
+        XY = Plugin.Bkgnd.FindColor(Hwnd, 0, 0, 1600, 900, "F88D4B")
+        ZB = InStr(XY, "|")
+        X = Clng(Left(XY, ZB - 1)) : Y = Clng(Right(XY, Len(XY) - ZB))
+        If x > 0 and y > 0 Then
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 282,700)
+            i1=i1+1
+        End If
+    wend
+    Delay 2000
+    '选择
+    i2=0
+    While i2=0
+        XY = Plugin.Bkgnd.FindColor(Hwnd, 0, 0, 1600, 900, "48B8FF")
+        ZB = InStr(XY, "|")
+        X = Clng(Left(XY, ZB - 1)) : Y = Clng(Right(XY, Len(XY) - ZB))
+        If x > 0 and y > 0 Then 
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 620,218)
+            i2=i2+1
+        End If
+    wend
+    Delay 1000
+    '查询
+    i3=0
+    While i3=0
+        XY = Plugin.Bkgnd.FindColor(Hwnd, 1078,149, 1225,218, "48B8FF")
+        ZB = InStr(XY, "|")
+        X = Clng(Left(XY, ZB - 1)) : Y = Clng(Right(XY, Len(XY) - ZB))
+        If x > 0 and y > 0 Then 
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 525, 182)
+            Delay 1500
+            Call Plugin.Bkgnd.SendString(Hwnd,商品ID)
+            i3=i3+1
+        End If
+    Wend
+    Delay 1000
+    '单击查询
+    Call Plugin.Bkgnd.LeftClick(Hwnd, 1138,181)
+    Delay 3000
+    '单选按钮-----
+    i16=0
+    While 16=0
+        XY = Plugin.Bkgnd.FindColor(Hwnd, 388,493,405,510, "404040")
+        ZB = InStr(XY, "|")
+        X = Clng(Left(XY, ZB - 1)) : Y = Clng(Right(XY, Len(XY) - ZB))
+        If x > 0 and y > 0 Then 
+            i16 = i16 + 1
+        End If
+    Wend
+    Delay 200
+    Call Plugin.Bkgnd.LeftClick(Hwnd, 388,503)
+    Delay 200
+    '确定
+    i4=0
+    While i4=0
+        XY = Plugin.Bkgnd.FindColor(Hwnd, 1207,644, 1255,670, "47AA35")
+        ZB = InStr(XY, "|")
+        X = Clng(Left(XY, ZB - 1)) : Y = Clng(Right(XY, Len(XY) - ZB))
+        If x > 0 and y > 0 Then 
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 1227,660)
+            i4=i4+1
+        End If
+    Wend
+    '选择
+    i5=0
+    While i5=0
+        XY = Plugin.Bkgnd.FindColor(Hwnd, 592,208, 663,233, "48B8FF")
+        ZB = InStr(XY, "|")
+        X = Clng(Left(XY, ZB - 1)) : Y = Clng(Right(XY, Len(XY) - ZB))
+        If x > 0 and y > 0 Then 
+            Delay 200
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 824,258)
+            Call Plugin.Bkgnd.SendString(Hwnd, 促销价)
+            Delay 200
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 377,297)
+            Call Plugin.Bkgnd.SendString(Hwnd, 促销语)
+            Delay 200
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 375,338)
+            Call Plugin.Bkgnd.SendString(Hwnd, 可售库存*2)
+            Delay 200
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 381,375)
+            SayString 26
+            Delay 100
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 825,377)
+            SayString 5
+            Delay 100
+            i5=i5+1
+        End If
+    Wend
+    Delay 100
+    //日期选择
+    Call a(时间1)
+    Call 日历_小时(651, 489,小时_1)
+    Call 日历_分(651, 489, 分_1)
+    Delay 300
+    //     Call Plugin.Bkgnd.LeftClick(Hwnd,1100,419)
+    //      Delay 100
+    //      Call Plugin.Bkgnd.LeftClick(Hwnd, 1263,457)
+    //       Delay 100
+    //      Call Plugin.Bkgnd.LeftClick(Hwnd, 1231,619)
+    //            Delay 100
+    //      Call Plugin.Bkgnd.LeftClick(Hwnd, 1104,490)
+    //            Delay 100
+    //      Call Plugin.Bkgnd.LeftClick(Hwnd, 1104,490)
+    //      
+    Call b(时间2)
+    Call 日历_小时(1110, 489, 小时_2)
+    Delay 100
+    Call 日历_分(1110, 489, 分_2)
+    Delay 300
+    //点击保存
+    Call Plugin.Bkgnd.LeftClick(Hwnd, 263,694)
+    Delay 3000
+    //循环判断确定按钮是否出现
+    //	i10=0
+    //    While i10=0
+    //        XY = Plugin.Bkgnd.FindColor(Hwnd, 992,82,1086,123, "CA8B42")
+    //        ZB = InStr(XY, "|")
+    //        X = Clng(Left(XY, ZB - 1)) : Y = Clng(Right(XY, Len(XY) - ZB))
+    //        If x > 0 and y > 0 Then 
+    //        
+    //            traceprint "已经找到确认按钮"
+    //            i10 = 100
+    //            Delay 100
+    //        End If
+    //    Wend
+    //判断消息框信息为何种情况（设置结果为1 创建成功）
+    Call 判断结果(Hwnd)
+    Delay 200
+    //点击确认
+    Call Plugin.Bkgnd.LeftClick(Hwnd, 1042, 100)
+    TracePrint "点击确认"
+    Delay 3000
+    // 一行设置结果为下一次开始准备
+    //点击限时促销管理
+    Call Plugin.Bkgnd.LeftClick(Hwnd, 84, 292)
+    Delay 100
+End sub
+Sub a (时间)
+    Call Plugin.Bkgnd.LeftClick(Hwnd, 636,417)
+    Delay 200
+    月份 = Month(时间)
+    号数 = day(时间)
+    Select Case 月份
+    Case 10
+        指数 = 5
+    Case 11
+        指数 = 8
+    Case 12
+        指数 = 3
+    Case 10
+        指数 = 5
+    Case 1
+        指数 = 6
+    Case 2
+        指数 =2
+    Case 3
+        指数 = 3
+    Case 4
+        指数 = 6
+    Case 5
+        指数 = 8
+    Case 6
+        指数 = 4
+    Case 7
+        指数 = 6
+    Case 8
+        指数 = 2
+    Case 9
+        指数 = 5
+    End Select
+    编号=号数+指数-2
+    翻页数 = DiffADate(时间)
+    TracePrint "翻页数"&翻页数
+    If 翻页数 >= 0 Then 
+        for 翻页数   
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 812,455)
+        Next
+    Else 
+        for Abs(翻页数)  
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 645,455)
+        Next
+    End If
+    Call 日历(646,510,编号)
+End Sub
+Sub b(时间)
+    Call Plugin.Bkgnd.LeftClick(Hwnd, 1096,417)
+    Delay 200
+    月份 = Month(时间)
+    号数 = day(时间)
+    Select Case 月份
+    Case 10
+        指数 = 5
+    Case 11
+        指数 = 8
+    Case 12
+        指数 = 3
+    Case 10
+        指数 = 5
+    Case 1
+        指数 = 6
+    Case 2
+        指数 = 2
+    Case 3
+        指数 = 3
+    Case 4
+        指数 = 6
+    Case 5
+        指数 = 8
+    Case 6
+        指数 = 4
+    Case 7
+        指数 = 6
+    Case 8
+        指数 = 2
+    Case 9
+        指数 = 5
+    End Select
+    编号=号数+指数-2
+    翻页数 = DiffADate(时间)
+    TracePrint "翻页数"&翻页数
+    If 翻页数 >= 0 Then 
+        for 翻页数   
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 1263,455)
+        Next
+    Else 
+        for Abs(翻页数)  
+            Call Plugin.Bkgnd.LeftClick(Hwnd, 1096,457)
+        Next
+    End If
+    Call 日历(1097,508 ,编号)
+End Sub
+Function DiffADate(时间)
+    DiffADate =  DateDiff("m", Now, 时间)
+End Function
+Sub 日历(起始点x, 起始点y,编号)
+    y = 起始点y
+    i = 0
+    Dim b(42)
+    For 6
+        For 7
+            b(i)=y
+            i = i + 1
+        Next
+        y = y + 26
+    Next
+    x = 起始点x
+    Dim a(41)
+    i=0
+    For 6
+        x=起始点x
+        For 7
+            a(i)=x
+            x = x + 26
+            i = i + 1
+        Next 
+    Next
+    Dim n
+    n= 编号
+    call Plugin.Bkgnd.LeftClick(Hwnd, a(n), b(n)) 
+    Delay 200
+End Sub
+Sub 日历_小时(起始点x, 起始点y,小时)
+    y = 起始点y
+    i = 0
+    Dim b(24)
+    For 6
+        For 4
+            b(i)=y
+            i = i + 1
+        Next
+        y = y + 28
+    Next
+    x = 起始点x
+    Dim a(24)
+    i=0
+    For 6
+        x=起始点x
+        For 4
+            a(i)=x
+            x = x + 44
+            i = i + 1
+        Next 
+    Next
+    Dim n
+    n= 小时
+    call Plugin.Bkgnd.LeftClick(Hwnd, a(n), b(n)) 
+    Delay 200
+End Sub
+Sub 日历_分(起始点x, 起始点y,分)
+    y = 起始点y
+    i = 0
+    Dim b(12)
+    For 3
+        For 4
+            b(i)=y
+            i = i + 1
+        Next
+        y = y + 28
+    Next
+    x = 起始点x
+    Dim a(12)
+    i=0
+    For 3
+        x=起始点x
+        For 4
+            a(i)=x
+            x = x + 44
+            i = i + 1
+        Next 
+    Next
+    Dim n
+    n = Round(分/ 5,0)
+    TracePrint n
+    call Plugin.Bkgnd.LeftClick(Hwnd, a(n), b(n)) 
+    Delay 200
+End Sub
+Sub 结束提示()
+    Call Plugin.Office.CloseXls()
+    sDate2 = Plugin.Sys.GetDateTime()
+    TracePrint "用时"&DateDiff("s",sDate1 ,sDate2 )&"秒"
+    MsgBox "已经循环完" & 行数-首行数 & "次"
+End Sub
+Sub 判断结果(Hwnd)
+    Hwnd = Hwnd
+    XY = Plugin.Bkgnd.FindPic(Hwnd, 0, 0, 1024, 768, "C:\图片\创建成功.bmp", 0, 0.9)
+    iZB = InStr(XY, "|")
+    X = CLng(Left(XY, iZB - 1))
+    Y = CLng(Right(XY, Len(XY) - iZB))
+    If x > 0 and y > 0 Then 
+        TracePrint "成功"
+        设置结果 = 1
+    Else 
+        TracePrint "未成功"
+        Call Plugin.Office.WriteXls(1, 行数, 8, "内容")
+        设置结果 = 0
+        未成功结果 = 未成功结果 & 行数 & "-"
+        TracePrint 未成功结果
+        //			Hwnd1 = Plugin.Window.Find(0, "1111.txt - 记事本")
+        //			Hwnd1 = Plugin.Window.FindEx(Hwnd1, 0, "Edit", 0)   
+        //			
+        //			Call Plugin.Bkgnd.SendString(Hwnd1, 行数& chr(13))
+        //			
+        //			TracePrint Hwnd1
+        //
+    End If
+End Sub
+  </pre>
+
+</div>
+
+</body>
+</html>
