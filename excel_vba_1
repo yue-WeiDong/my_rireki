@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>excel_vba案例</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  body {
+    background: #ffffff;
+    color: #212529;
+    font-size: 18px;          /* ✅ 字体大小，自己调 */
+    line-height: 1.9;
+  }
+
+  pre {
+    white-space: pre-wrap;    /* ✅ 自动换行 */
+    word-break: break-word;
+    font-family: Consolas, "Microsoft YaHei", monospace;
+    background: #f8f9fa;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    border-left: 5px solid #000;
+    padding-left: 10px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container-fluid px-3 py-4">
+
+  <!-- 返回主页 -->
+  <a href="index.html" class="text-decoration-none text-dark small">← 返回主页</a>
+
+  <h1 class="mt-2">📄 excel_vba案例1</h1>
+
+  <pre>
+这是一个用于Excel订单数据处理的VBA宏，主要功能如下：
+
+自动备份：创建指定目录结构，保存原始数据和转换后数据的副本
+数据格式转换：将原始订单数据转换为标准ERP格式
+商品代码映射：根据特定规则将商品代码映射到对应的商品信息和价格
+地址拼接：自动组合省市区信息形成完整收货地址
+特殊订单检测：识别新疆、西藏、青海等偏远地区订单
+液体商品标记：自动标记含液体商品的订单
+数据验证：检查价格列是否有空值，确保数据完整性
+--------------------------------------------------------------------------------------
+Sub ss()
+Dim fso, fo, dir As String, dir1 As String, dir2 As String, t1 As Date, t2 As Date, i As Integer
+
+    i = Application.CountA(Range("a:a"))
+    Application.DisplayAlerts = False
+    dir = "E:/格格家数据备份"
+    dir1 = "E:/格格家数据备份/格格家DATA/" '原工作表---备份路径
+    dir2 = "E:/格格家数据备份/格格家转ERP/" '转换后工作表---备份路径
+    
+    On Error Resume Next '忽略错误
+    VBA.MkDir (dir): VBA.MkDir (dir1): VBA.MkDir (dir2) '如果没有创建文件夹
+    
+    filespec = ActiveWorkbook.FullName '获取路径全称
+     Set fso = CreateObject("Scripting.FileSystemObject")
+     Set fo = fso.GetFile(filespec)
+     file_Time = Format(fo.DateCreated, "mm-dd-yy hh_mm_ss") '获取文件创建时间
+    If ActiveSheet.Name <> "Sheet0" Then
+               
+                If MsgBox("活动表名称不是sheet0,是否继续运行吗！", 1) = 2 Then '如何选择2,则退出程序
+                    GoTo LastLine
+                End If
+    End If
+            
+    If InStr(1, filespec, "_1471") > 0 Then
+            shopName = "G"  '格格家
+    ElseIf InStr(1, filespec, "_1472") > 0 Then
+            shopName = "H"  '环球捕手
+    Else
+            shopName = "Q"  '其它
+                If MsgBox("文件名中不含有_1471或_1472,是否继续运行吗！", 1) = 2 Then '如何选择2,则退出程序
+                    GoTo LastLine
+                End If
+    End If
+     file_name_1 = dir1 & "格格家DATA_" & file_Time & "_" & shopName & ".xlsx"    '文件名1
+     file_name_2 = dir2 & "格格家转ERP_" & file_Time & "_" & shopName & ".xlsx"   '文件名2
+     
+     ActiveWorkbook.SaveCopyAs file_name_1 '转换前另存
+     
+t1 = Timer
+ActiveSheet.Name = "b"
+Sheets.Add Sheets(1)
+ActiveSheet.Name = "a"
+
+'在第一行输入字段名
+With Sheets("a")
+Application.ScreenUpdating = False
+arr = Array("订单编号", "店铺名称", "订单状态", "买家会员", "商品名称", "商品代码", "规格名称", "数量", "价格", "商品备注", _
+"运费", "支付金额", "买家留言", "收货人", "收货地址", "联系电话", "联系手机", "订单创建时间", "订单付款时间", "物流单号", _
+"物流公司", "卖家备注", "发票抬头", "是否手机订单", "是否货到付款", "支付方式", "支付交易号", "真实姓名", "身份证号")
+
+    For ii = 1 To 29
+
+         .Cells(1, ii) = arr(ii - 1)
+    
+    Next
+End With
+
+'拷贝sheet("b") 到第二个sheet("a")(不需计算的)
+'Application.CountA(Range("a:a"))  计算最大使用列数
+
+ Sheets("b").Activate
+
+ i = Application.CountA(Range("a:a"))
+
+'拷贝-订单编号
+Sheets("b").Range(Cells(2, 1), Cells(i, 1)).Copy Sheets("a").Range("a2")
+
+'填充-店铺名称
+Sheets("b").Range(Cells(2, 3), Cells(i, 3)).Copy Sheets("a").Range("b2")
+Sheets("a").Range("b2", "b" & i) = "格格家"
+
+'填充-订单状态
+Sheets("a").Range("c2", "c" & i) = "买家已付款，等待卖家发货"
+
+'拷贝-买家会员
+Sheets("b").Range(Cells(2, 6), Cells(i, 6)).Copy Sheets("a").Range("d2")
+
+'拷贝-商品名称
+Sheets("b").Range(Cells(2, 15), Cells(i, 15)).Copy Sheets("a").Range("e2")
+
+'拷贝-数量
+Sheets("b").Range(Cells(2, 16), Cells(i, 16)).Copy Sheets("a").Range("h2")
+
+'拷贝-运费
+Sheets("b").Range(Cells(2, 19), Cells(i, 19)).Copy Sheets("a").Range("k2")
+
+'拷贝-收件人
+Sheets("b").Range(Cells(2, 6), Cells(i, 6)).Copy Sheets("a").Range("n2")
+
+'拷贝-联系电话
+Sheets("b").Range(Cells(2, 13), Cells(i, 13)).Copy Sheets("a").Range("p2")
+
+'拷贝-联系手机
+Sheets("b").Range(Cells(2, 13), Cells(i, 13)).Copy Sheets("a").Range("q2")
+
+'拷贝-订单创建时间
+Sheets("b").Range(Cells(2, 4), Cells(i, 4)).Copy Sheets("a").Range("r2")
+
+'拷贝-订单付款时间
+Sheets("b").Range(Cells(2, 5), Cells(i, 5)).Copy Sheets("a").Range("s2")
+
+'设置-物流公司
+Sheets("a").Range("u2", "u" & i) = "中通快递"
+
+
+Sheets("b").Activate
+
+i = Application.CountA(Range("a:a"))
+
+With Sheets("a")
+
+    For p = 2 To i
+If Cells(p, 14).Value = "2GG4901301254283" Then
+ .Cells(p, 6) = "2GG4901301254283"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "56.25"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+ElseIf Cells(p, 14).Value = "2GG4901301254276" Then
+ .Cells(p, 6) = "2GG4901301254276"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "56.25"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG1PINK1PUR" Then
+ .Cells(p, 6) = "GG1PINK1PUR"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "56.25"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG2PIN1GE1PUR" Then
+ .Cells(p, 6) = "GG2PIN1GE1PUR"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "99.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2GG4901301245496" Then
+ .Cells(p, 6) = "2GG4901301245496"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "62.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4901301245496" Then
+ .Cells(p, 6) = "YBJHW"
+ .Cells(p, 7) = "4901301245496"
+ .Cells(p, 9) = "34.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GGWXandMG" Then
+ .Cells(p, 6) = "GGWXandMG"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "XYCandYZ" Then
+ .Cells(p, 6) = "GGXYCandYZ"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "YZANDYGJ" Then
+ .Cells(p, 6) = "GGYZANDYGJ"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GGMGandYGJ" Then
+ .Cells(p, 6) = "GGMGandYGJ"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GGHWYZ5in1" Then
+ .Cells(p, 6) = "GGHWYZ5in1"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "288"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2GG4901301272201" Then
+ .Cells(p, 6) = "2GG4901301272201"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2GG4901301245502" Then
+ .Cells(p, 6) = "2GG4901301245502"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2GG4901301265586" Then
+ .Cells(p, 6) = "2GG4901301265586"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2GG4901301229069" Then
+ .Cells(p, 6) = "2GG4901301229069"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2GG4901301245519" Then
+ .Cells(p, 6) = "2GG4901301245519"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4966680246977" Then
+ .Cells(p, 6) = "2BS4966680246977"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "78.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4966680245741" Then
+ .Cells(p, 6) = "GG4966680245741"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "78.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4966680246977" Then
+ .Cells(p, 6) = "GGFJandYH"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "78.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GGFJandYH" Then
+ .Cells(p, 6) = "GGFJandYH"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "78.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GGQYZandYH" Then
+ .Cells(p, 6) = "GGQYZandYH"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "85.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GGQYZandFJ" Then
+ .Cells(p, 6) = "GGQYZandFJ"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "85.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4968909061200" Then
+ .Cells(p, 6) = "SFMUY"
+ .Cells(p, 7) = "4968909061200"
+ .Cells(p, 9) = "69"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4987072038987" Then
+ .Cells(p, 6) = "MWSXL"
+ .Cells(p, 7) = "4987072038987"
+ .Cells(p, 9) = "31"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4901301282248" Then
+ .Cells(p, 6) = "GG4901301282248"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2GG4901121626376" Then
+ .Cells(p, 6) = "2GG4901121626376"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "49.54"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2GG4901301307484" Then
+ .Cells(p, 6) = "2GG4901301307484"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "49"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2GG4901301282750" Then
+ .Cells(p, 6) = "2GG4901301282750"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "56.25"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG1blu2Vio1gre" Then
+ .Cells(p, 6) = "GG1blu2Vio1gre"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "99.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4903301176848" Then
+ .Cells(p, 6) = "SXSSW"
+ .Cells(p, 7) = "4903301176848"
+ .Cells(p, 9) = "29"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG1fru1flo" Then
+ .Cells(p, 6) = "GG1fru1flo"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "54"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4903301093565" Then
+ .Cells(p, 6) = "MYGSW"
+ .Cells(p, 7) = "4903301093565"
+ .Cells(p, 9) = "19"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG1str1gra" Then
+ .Cells(p, 6) = "GG1str1gra"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "31"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4902430607148" Then
+ .Cells(p, 6) = "SXYPG"
+ .Cells(p, 7) = "4902430607148"
+ .Cells(p, 9) = "35"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4903301138525" Then
+ .Cells(p, 6) = "GZBSW"
+ .Cells(p, 7) = "4903301138525"
+ .Cells(p, 9) = "52"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4903301163329" Then
+ .Cells(p, 6) = "GG4903301163329"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "36.9"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4903301745525" Then
+ .Cells(p, 6) = "SXYSH"
+ .Cells(p, 7) = "4903301745525"
+ .Cells(p, 9) = "22"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GGKAOXJJ2403" Then
+ .Cells(p, 6) = "KAOXJJ2403"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "40"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901301254283" Then
+ .Cells(p, 6) = "2BS4901301254283"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "56.25"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901301254276" Then
+ .Cells(p, 6) = "2BS4901301254276"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "56.25"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS1PINK1PUR" Then
+ .Cells(p, 6) = "BS1PINK1PUR"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "56.25"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS2PIN1GE1PUR" Then
+ .Cells(p, 6) = "BS2PIN1GE1PUR"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "99.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901301245496" Then
+ .Cells(p, 6) = "2BS4901301245496"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "62.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4901301245496" Then
+ .Cells(p, 6) = "YBJHW"
+ .Cells(p, 7) = "4901301245496"
+ .Cells(p, 9) = "34.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BSWXandMG" Then
+ .Cells(p, 6) = "BSWXandMG"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BSXYCandYZ" Then
+ .Cells(p, 6) = "BSXYCandYZ"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BSYZandYGJ" Then
+ .Cells(p, 6) = "BSYZandYGJ"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BSMGandYGJ" Then
+ .Cells(p, 6) = "BSMGandYGJ"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BSHWYZ5in1" Then
+ .Cells(p, 6) = "BSHWYZ5in1"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "288"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901301272201" Then
+ .Cells(p, 6) = "2BS4901301272201"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901301245502" Then
+ .Cells(p, 6) = "2BS4901301245502"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901301265586" Then
+ .Cells(p, 6) = "2BS4901301265586"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901301229069" Then
+ .Cells(p, 6) = "2BS4901301229069"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS24901301245519" Then
+ .Cells(p, 6) = "2BS24901301245519"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4966680246977" Then
+ .Cells(p, 6) = "2BS4966680246977"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "78.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4966680245741" Then
+ .Cells(p, 6) = "2BS4966680245741"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "78.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BSFJandYH" Then
+ .Cells(p, 6) = "2BSFJandYH"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "78.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "QYZandYH" Then
+ .Cells(p, 6) = "QYZandYH"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "85.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "QYZandFJ" Then
+ .Cells(p, 6) = "QYZandFJ"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "85.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4968909061200" Then
+ .Cells(p, 6) = "SFMUY"
+ .Cells(p, 7) = "4968909061200"
+ .Cells(p, 9) = "69"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4987072038987" Then
+ .Cells(p, 6) = "MWSXL"
+ .Cells(p, 7) = "4987072038987"
+ .Cells(p, 9) = "31"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4901301282248" Then
+ .Cells(p, 6) = "BS4901301282248"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "120"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901121626376" Then
+ .Cells(p, 6) = "2BS4901121626376"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "49.54"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901301307484" Then
+ .Cells(p, 6) = "2BS4901301307484"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "49"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "2BS4901301282750" Then
+ .Cells(p, 6) = "2BS4901301282750"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "56.25"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS1blu2Vio1gre" Then
+ .Cells(p, 6) = "BS1blu2Vio1gre"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "99.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4903301176848" Then
+ .Cells(p, 6) = "SXSSW"
+ .Cells(p, 7) = "4903301176848"
+ .Cells(p, 9) = "29"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS1fru1flo" Then
+ .Cells(p, 6) = "BS1fru1flo"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "54"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4903301093565" Then
+ .Cells(p, 6) = "MYGSW"
+ .Cells(p, 7) = "4903301093565"
+ .Cells(p, 9) = "19"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS1str1gra" Then
+ .Cells(p, 6) = "BS1str1gra"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "31"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4902430607148" Then
+ .Cells(p, 6) = "SXYPG"
+ .Cells(p, 7) = "4902430607148"
+ .Cells(p, 9) = "35"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4903301138525" Then
+ .Cells(p, 6) = "GZBSW"
+ .Cells(p, 7) = "4903301138525"
+ .Cells(p, 9) = "52"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4903301163329" Then
+ .Cells(p, 6) = "BS4903301163329"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "36.9"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4903301745525" Then
+ .Cells(p, 6) = "SXYSH"
+ .Cells(p, 7) = "4903301745525"
+ .Cells(p, 9) = "22"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "KAOXJJ2403" Then
+ .Cells(p, 6) = "KAOXJJ2403"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "40"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4968909061200" Then
+ .Cells(p, 6) = "SFMUY"
+ .Cells(p, 7) = "4968909061200"
+ .Cells(p, 9) = "69"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4968909061804" Then
+ .Cells(p, 6) = "4968909061804"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "91"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "GG4903301163329" Then
+ .Cells(p, 6) = "GG4903301163329"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "36.9"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4987009156807" Then
+ .Cells(p, 6) = "BS4987009156807 "
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "70.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "BS4901301244574" Then
+ .Cells(p, 6) = "4901301244574"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "45"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4905179807770" Then
+ .Cells(p, 6) = "4905179807770"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "190"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4905179807787" Then
+ .Cells(p, 6) = "4905179807787"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "180"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4905179490583" Then
+ .Cells(p, 6) = "4905179490583"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "180"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4905179106514" Then
+ .Cells(p, 6) = "4905179106514"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "216"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4905179803956" Then
+ .Cells(p, 6) = "4905179803956"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "241"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4905179803970" Then
+ .Cells(p, 6) = "4905179803970"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "241"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4901301245496" Then
+ .Cells(p, 6) = "YBJHW"
+ .Cells(p, 7) = "4901301245496"
+ .Cells(p, 9) = "34.5"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4902430607148" Then
+ .Cells(p, 6) = "SXYPG"
+ .Cells(p, 7) = "4902430607148"
+ .Cells(p, 9) = "35"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4903301093565" Then
+ .Cells(p, 6) = "MYGSW"
+ .Cells(p, 7) = "4903301093565"
+ .Cells(p, 9) = "19"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4903301138525" Then
+ .Cells(p, 6) = "GZBSW"
+ .Cells(p, 7) = "4903301138525"
+ .Cells(p, 9) = "52"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4903301176848" Then
+ .Cells(p, 6) = "SXSSW"
+ .Cells(p, 7) = "4903301176848"
+ .Cells(p, 9) = "29"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4903301745525" Then
+ .Cells(p, 6) = "SXYSH"
+ .Cells(p, 7) = "4903301745525"
+ .Cells(p, 9) = "22"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+ElseIf Cells(p, 14).Value = "4968909061200" Then
+ .Cells(p, 6) = "SFMUY"
+ .Cells(p, 7) = "4968909061200"
+ .Cells(p, 9) = "69"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+ElseIf Cells(p, 14).Value = "GG4966680245741" Then ' B情况 格格家的编号是4966680245741或是GG4966680245741
+ .Cells(p, 6) = "GG4966680245741"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "78.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+
+ElseIf Cells(p, 14).Value = "GG4966680246977" Then ' B情况
+ .Cells(p, 6) = "GGFJandYH"
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = "78.3"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+
+
+ElseIf Cells(p, 14).Value = "GG4968909061200" Then ' B情况
+ .Cells(p, 6) = "SFMUY"
+ .Cells(p, 7) = "4968909061200"
+ .Cells(p, 9) = "69"
+ .Cells(p, 12) = .Cells(p, 8) * .Cells(p, 9)
+Else
+
+ .Cells(p, 6) = ""
+ .Cells(p, 7) = ""
+ .Cells(p, 9) = ""
+ .Cells(p, 12) = ""
+End If
+
+        Next
+
+End With
+
+'拷贝-收件人地址
+
+i = Application.CountA(Range("a:a"))
+
+For p = 2 To i
+s = "=CONCATENATE(SUBSTITUTE(I" & p & ",""市"",""""),"" "",J" & p & ","" "",K" & p & ","" "",L" & p & ")"
+Cells(p, 32) = s
+
+Next
+
+Sheets("b").Range(Cells(2, 32), Cells(i, 32)).Copy
+Sheets("a").Range("o2").PasteSpecial (xlPasteValues)
+Sheets("b").Range(Cells(2, 32), Cells(i, 32)).Delete
+
+
+'文本格式转换
+'需要转换的列为：f, g, h, ,i ,k, l
+
+Sheets("a").Activate
+
+arrCol = Array(Columns("f:f"), Columns("g:g"), Columns("h:h"), Columns("i:i"), Columns("k:k"), Columns("l:l"))
+
+For Each col In arrCol
+    Set objectCol = col
+    objectCol.TextToColumns , DataType:=xlTextFormat, TrailingMinusNumbers:=True, FieldInfo:=Array(1, 2)
+Next
+
+Sheets("a").Name = "ERP"
+Sheets("b").Delete
+Cells(1, 1).Select
+ActiveWorkbook.Save
+ActiveWorkbook.SaveCopyAs file_name_2
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+iprice = Application.CountA(Range("i:i"))
+If (i - iprice) <> 0 Then
+    MsgBox "价格列有空值,数量：" & (i - iprice) & "个"
+End If
+
+Call 提示
+
+Cells(1, 1).Select
+
+t2 = Timer '获取时间
+
+'程序运行时间
+Debug.Print t2 - t1
+LastLine: Debug.Print "game over"
+End Sub
+
+Sub 提示()
+  
+  Dim MRG As Range, k As Integer
+  k = 0
+Set MRG = Range("O:O").Find("新疆")
+    If Not MRG Is Nothing Then
+    k = k + 1
+End If
+      
+Set MRG = Range("O:O").Find("西藏")
+    If Not MRG Is Nothing Then
+    k = k + 1
+End If
+
+Set MRG = Range("O:O").Find("青海")
+    If Not MRG Is Nothing Then
+    k = k + 1
+End If
+    If k > 0 Then
+    
+    Call 偏远地区替换颜色
+    Call 液体判断
+    
+    MsgBox "新疆， 西藏，青海的订单：" & Chr(13) & Chr(10) & "* 一律跟客服反馈，问是否顾客有加付20元运费。" & Chr(13) & Chr(10) & "如果没有付的话， 是不能发货的" & _
+    Chr(13) & Chr(10) & "液体是不能发的， 加钱也发不了，只能让顾客退款。" & Chr(13) & Chr(10) & "非液体+20元可发。"
+    End If
+End Sub
+
+Sub 偏远地区替换颜色() '格式替换为红色
+
+   Columns("O:O").Select
+    Application.ReplaceFormat.Interior.ColorIndex = 3
+    Selection.Replace What:="新疆", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=True
+    Selection.Replace What:="西藏", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=True
+    Selection.Replace What:="青海", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=True
+End Sub
+Sub 液体判断()
+arrYe = Array("2BS4966680246977", "GG4966680245741", "GGFJandYH", "GGFJandYH", "GGQYZandYH", "GGQYZandFJ", "SFMUY", "2GG4901301307484", "SXSSW", "GG1fru1flo", "GG4903301163329", "SXYSH", "KAOXJJ2403", "2BS4966680246977", "2BS4966680245741", "2BSFJandYH", "QYZandYH", "QYZandFJ", "SFMUY", "2BS4901301307484", "SXSSW", "BS1fru1flo", "BS4903301163329", "SXYSH", "KAOXJJ2403", "SFMUY", "4968909061804", "GG4903301163329", "4901301244574")
+Columns("f:f").Select
+    Application.ReplaceFormat.Interior.ColorIndex = 3
+     For Each element In arrYe
+        Selection.Replace What:=element, Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=True
+    Next element
+End Sub
+  </pre>
+
+</div>
+
+</body>
+</html>
