@@ -1,0 +1,2594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>excel_vba案例</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  body {
+    background: #ffffff;
+    color: #212529;
+    font-size: 18px;          /* ✅ 字体大小，自己调 */
+    line-height: 1.9;
+  }
+
+  pre {
+    white-space: pre-wrap;    /* ✅ 自动换行 */
+    word-break: break-word;
+    font-family: Consolas, "Microsoft YaHei", monospace;
+    background: #f8f9fa;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    border-left: 5px solid #000;
+    padding-left: 10px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container-fluid px-3 py-4">
+
+  <!-- 返回主页 -->
+  <a href="index.html" class="text-decoration-none text-dark small">← 返回主页</a>
+
+  <h1 class="mt-2">📄 excel_vba案例2</h1>
+
+  <pre>
+Excel商品数据处理的VBA宏集合，主要功能如下：
+
+数据清洗：删除无关列、过滤无效数据（价格为0、下架商品）
+价格管理：从外部表格提取活动价和成本价（如"活动&成本"、"限时设置"等工作表），计算最终售价
+分类筛选：按商品类别（母婴、美妆、个护等）自动筛选并导出独立文件
+网页代码生成：为商品生成HTML代码片段，可直接用于网站展示
+统计功能：按一级/二级分类统计商品数量
+格式优化：统一行高、列宽、字体和颜色标记
+文件管理：自动创建带时间戳的备份文件，避免覆盖原始数据
+-----------------------------------------------------------------------------------------------------
+Sub group()
+    Call 删除列: Call delete: Call 活动价: Call 活动价格合成: Call 填加图片: Call 整理: Call 分类统计: Call 加入网址: Call 成本价: Call 活动价1: Call 整理1: Call 筛选1: Call 整理2
+End Sub
+
+
+Sub con_01()
+
+    t1 = "0619_0621"
+    
+    t2 = "0622_0625"
+    
+    
+    t = t1: n1 = "a1_母婴_左侧_" & t & "_": n2 = "a2_母婴_右侧_" & t & "_": n3 = "a3_美妆_左侧_" & t & "_": n4 = "a4_美妆_右侧_" & t & "_": n5 = "a5_保健_中上_" & t & "_": n6 = "a6_日用_中上_" & t & "_"
+ 
+    Call 母婴用品_哺乳喂养_水壶水杯((n1)): Call 母婴用品_洗护清洁((n2)): Call 个护彩妆_洗发护发((n3)):
+    
+    Call 个护彩妆_面部护理((n4)): Call 个护彩妆_保健用品((n5)): Call 生活家居_生活日用_洗衣护理((n6))
+    
+    
+    t = t2: n1 = "b1_母婴_左侧_" & t & "_": n2 = "b2_母婴_右侧_" & t & "_": n3 = "b3_美妆_左侧_" & t & "_": n4 = "b4_美妆_右侧_" & t & "_": n5 = "b5_保健_中上_" & t & "_": n6 = "b6_日用_中上_" & t & "_"
+ 
+    Call 母婴用品_哺乳喂养_哺喂餐具((n1)):   Call 母婴用品_尿裤湿巾((n2)): Call 个护彩妆_身体护理((n3)):
+    
+    Call 个护彩妆_女性护理_卫生巾护垫((n4)): Call 个护彩妆_保健用品((n5)): Call 生活家居_生活日用_整理收纳((n6))
+    
+End Sub
+Sub c1()
+    Call 个护彩妆_保健用品
+End Sub
+Sub c2()
+    Call 个护彩妆_身体护理
+End Sub
+Sub c3()
+    Call 个护彩妆_面部护理
+End Sub
+Sub c4()
+    Call 个护彩妆_面部护理_面霜
+End Sub
+Sub c5()
+    Call 个护彩妆_面部护理_面膜
+End Sub
+Sub c6()
+    Call 个护彩妆_女性护理_卫生巾护垫
+End Sub
+Sub c7()
+    Call 个护彩妆_保健用品_眼药水
+End Sub
+Sub c8()
+    Call 母婴用品_哺乳喂养
+End Sub
+Sub c9()
+    Call 母婴用品_哺乳喂养_哺喂餐具
+End Sub
+Sub c10()
+    Call 母婴用品_哺乳喂养_奶瓶奶嘴
+End Sub
+Sub c11()
+    Call 母婴用品_哺乳喂养_水壶水杯
+End Sub
+Sub c12()
+    Call 母婴用品_哺乳喂养_哺喂收纳
+End Sub
+Sub c13()
+    Call 母婴用品_儿童玩具
+End Sub
+Sub c14()
+    Call 母婴用品_妈妈专区
+End Sub
+Sub c15()
+    Call 母婴用品_尿裤湿巾
+End Sub
+Sub c16()
+    Call 母婴用品_寝具服饰
+End Sub
+Sub c17()
+    Call 母婴用品_洗护清洁
+End Sub
+Sub c18()
+    Call 个护彩妆_洗发护发
+End Sub
+Sub c19()
+    Call 个护彩妆_男士护理
+End Sub
+Sub c20()
+    Call 个护彩妆_美容工具
+End Sub
+Sub c21()
+    Call 个护彩妆_口腔护理
+End Sub
+Sub c22()
+    Call 个护彩妆_缤纷彩妆
+End Sub
+Sub c23()
+    Call 生活家居_生活日用_洗手液
+End Sub
+Sub c24()
+    Call 生活家居_生活日用_整理收纳
+End Sub
+Sub c25()
+    Call 生活家居_生活日用_卫生纸纸巾
+End Sub
+Sub c26()
+    Call 生活家居_生活日用_驱虫防虫
+End Sub
+Sub c27()
+    Call 生活家居_生活日用_口罩
+End Sub
+Sub c28()
+    Call 生活家居_生活日用_洁厕抗菌
+End Sub
+Sub c29()
+    Call 生活家居_厨卫用品
+End Sub
+Sub c30()
+   Call 生活家居_生活日用_洗衣护理
+End Sub
+Sub c32()
+   Call 绘画用品
+End Sub
+Sub c33()
+   Call 时尚服饰_女袜
+End Sub
+Sub c34()
+   Call 生活家居_汽车生活
+End Sub
+Function IsFileExists(ByVal strFileName As String) As Boolean
+'判断文件是否存在
+    Dim objFileSystem As Object
+  
+    Set objFileSystem = CreateObject("Scripting.FileSystemObject")
+    If objFileSystem.fileExists(strFileName) = True Then
+        IsFileExists = True
+    Else
+        IsFileExists = False
+    End If
+End Function
+Function 表格格式(fn)
+'分别导出表格时，行高为15.5
+'如美妆_面膜
+'文件名加数量
+
+
+    Cells.Select
+    Cells.RowHeight = 15.5
+    Range("A1").Select
+    maxRow = Application.CountA(Range("a:a"))
+  
+    
+End Function
+Sub 删除列()
+    
+    Columns("O:O").Select '条码
+    Selection.Copy
+    Range("cc1").Select
+    ActiveSheet.Paste
+    
+    Columns("D:D").Select
+    Selection.delete shift:=xlShiftToLeft
+    Selection.delete shift:=xlShiftToLeft
+    Columns("G:G").Select
+    Selection.delete shift:=xlShiftToLeft
+    Columns("H:J").Select
+    Selection.delete shift:=xlShiftToLeft
+    Columns("I:I").Select
+    Selection.delete shift:=xlShiftToLeft
+    Columns("J:L").Select
+    Selection.delete shift:=xlShiftToLeft
+    Columns("L:L").Select
+    Selection.delete shift:=xlShiftToLeft
+    Columns("L:M").Select
+    Selection.delete shift:=xlShiftToLeft
+    Range("A1").Select
+End Sub
+
+Sub delete()
+
+ Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$K$4064", Visible:=False
+    Range("A1:K4064").AutoFilter Field:=10, Criteria1:=Array("0"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$K$4064", Visible:=False
+    Rows("2:2").Select
+    ActiveWindow.ScrollRow = 4259
+    Rows("2:4289").Select
+    Selection.delete shift:=xlShiftUp
+    ActiveWindow.ScrollRow = 1
+    Range("A1:K459").AutoFilter Field:=10
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$K$459", Visible:=False
+    Range("A1:K459").AutoFilter Field:=9, Criteria1:=Array("下架", "作废"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$K$459", Visible:=False
+    ActiveWindow.ScrollRow = 4259
+    Selection.delete shift:=xlShiftUp
+    ActiveWindow.ScrollRow = 1
+    Range("A1:K389").AutoFilter Field:=9
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$K$389", Visible:=False
+End Sub
+Sub 活动价()
+'
+    Range("N1") = "活动价"
+    Range("N2") = "=IFERROR(VLOOKUP(A2,'活动&成本'!A:R,10,0),"""")"
+    Range("N2").Select
+    Selection.Copy
+    ActiveWindow.ScrollRow = 4262
+    Range("N2:N4292").Select
+    Selection.FillDown
+    Range("A1").Select
+    ActiveWindow.ScrollRow = 1
+    
+    Columns("N:N").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlPasteSpecialOperationNone, SkipBlanks:=False, Transpose:=False
+    Application.CutCopyMode = False
+    Range("A1").Select
+    
+    
+     Range("O1") = "设置的"
+    Range("O2") = "=IFERROR(VLOOKUP(A2,'限时设置'!B:R,8,0),"""")"
+     Range("O2").Select
+    Selection.Copy
+    ActiveWindow.ScrollRow = 4262
+    Range("O2:O4292").Select
+    Selection.FillDown
+    Range("A1").Select
+    ActiveWindow.ScrollRow = 1
+    
+    Columns("O:O").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlPasteSpecialOperationNone, SkipBlanks:=False, Transpose:=False
+    Application.CutCopyMode = False
+    Range("A1").Select
+    
+    
+    Columns("G:G").Select
+    Selection.Copy
+    Range("P1").Select
+    ActiveSheet.Paste
+    
+    
+    Columns("P:P").Select
+    Selection.Copy
+    Range("W1").Select
+    ActiveSheet.Paste
+    
+
+End Sub
+
+Sub 活动价格合成()
+maxRow = Application.CountA(Range("a:a")) '计算最大使用列数
+Range("Q1") = "商品售价"
+    Range("Q2") = "=IFERROR(IF(O2="""",P2,text(O2,"".00"")),"""")"
+    Range("Q2").Select
+    Selection.Copy
+    ActiveWindow.ScrollRow = maxRow
+    Range("Q2:Q" & maxRow).Select
+    Selection.FillDown
+    Range("A1").Select
+    ActiveWindow.ScrollRow = 1
+    
+    Columns("Q:Q").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlPasteSpecialOperationNone, SkipBlanks:=False, Transpose:=False
+    Application.CutCopyMode = False
+    Range("A1").Select
+
+End Sub
+
+
+
+Sub 填加图片()
+'
+On Error Resume Next '忽略错误
+Dim oRow As Integer
+
+maxRow = Application.CountA(Range("a:a")) '计算最大使用列数
+Debug.Print maxRow
+For oRow = 2 To maxRow
+    Cells(oRow, 12).Value = "=VLOOKUP(""" & Cells(oRow, 2) & """,img!A:B,2,0)"
+    Cells(oRow, 13).FormulaR1C1 = "<li><div class=" & """" & "img" & """" & "><a target=" & """" & "_blank" & """" & " href=" & """" & "http://www.kjt.com/product/detail/" & Cells(oRow, 2) & """" & "><img src=" & """" & Cells(oRow, 12) & """" & "></a></div><p class=" & """" & "tit" & """" & "><a target=" & """" & "_blank" & """" & " href=" & """" & "http://www.kjt.com/product/detail/" & Cells(oRow, 2) & """" & ">" & Cells(oRow, 3) & "</a></p><p><span class=" & """" & "price price14" & """" & ">" & Cells(oRow, 17) & "</span><span class=" & """" & "ml10 price_old price_old_87" & """" & "><s style=" & """" & "display: inline-block; margin-left: -9px; width: 8px;" & """" & "></s>" & Format((Cells(oRow, 7) * 1.2), "fixed") & "</span></p></li>"
+
+Next
+
+End Sub
+Sub 整理()
+   Columns("L:L").Select
+    Selection.delete shift:=xlShiftToLeft
+    Columns("P:P").Select
+    Selection.Copy
+    Range("G1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlPasteSpecialOperationNone, SkipBlanks:=False, Transpose:=False
+    Columns("P:P").Select
+    Selection.delete shift:=xlShiftToLeft
+    Columns("O:O").Select
+    Selection.delete shift:=xlShiftToLeft
+    Columns("M:N").Select
+    Selection.EntireColumn.Hidden = True
+    Selection.AutoFit
+    Columns("L:L").AutoFit
+    Columns("L:L").Select
+    Selection.ColumnWidth = 25
+
+    Range("A1").Select
+End Sub
+Sub 分类统计()
+    
+    Sheets("二级分类").Select
+    Range("B2") = "=COUNTIF(Sheet1!E:E,a2)"
+    Range("B2").Select
+    Selection.AutoFill Destination:=Range("B2:B24"), Type:=xlFillDefault
+    Range("B2:B24").Select
+    Range("A1").Select
+    
+    Sheets("一级分类").Select
+    Range("B2") = "=COUNTIF(Sheet1!D:D,a2)"
+    Range("B2").Select
+    Selection.AutoFill Destination:=Range("B2:B7"), Type:=xlFillDefault
+    Range("B2:B7").Select
+    Range("A1").Select
+    Sheets("Sheet1").Activate
+End Sub
+
+Sub 加入网址()
+
+    Columns("M:M").Select
+    Selection.Insert shift:=xlShiftToRight
+    Range("M1").Select
+    With Selection
+        .FormulaR1C1 = "网址"
+        With .Characters.Font
+            .Name = "宋体"
+            .Bold = True
+            .Italic = False
+            .Strikethrough = False
+            .Superscript = False
+            .Subscript = False
+            .ColorIndex = xlColorIndexAutomatic
+            .TintAndShade = 0
+            .Underline = xlUnderlineStyleNone
+            .Size = 10
+        End With
+    End With
+    Range("M17").Select
+    maxRow = Application.CountA(Range("a:a")) '计算最大使用列数
+    Debug.Print maxRow
+    
+    For i = 2 To maxRow
+         Cells(i, "m") = "=CONCATENATE(" & """" & "http://www.kjt.com/product/detail/" & """" & ",b" & i & ")"
+    Next i
+  
+End Sub
+Sub 成本价()
+    Range("O1") = "16成本价"
+    Range("O2") = "=IFERROR(VLOOKUP(A2,'活动&成本'!A:R,11,0),"""")"
+    Range("O2").Select
+    Selection.Copy
+    ActiveWindow.ScrollRow = 4262
+    Range("O2:N4292").Select
+    Selection.FillDown
+    Range("A1").Select
+    ActiveWindow.ScrollRow = 1
+    
+    Columns("O:O").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlPasteSpecialOperationNone, SkipBlanks:=False, Transpose:=False
+    Application.CutCopyMode = False
+    Range("A1").Select
+End Sub
+Sub 活动价1()
+    Range("N1") = "活动价"
+    Range("N2") = "=IFERROR(VLOOKUP(A2,'活动&成本'!A:R,10,0),"""")"
+    Range("N2").Select
+    Selection.Copy
+    ActiveWindow.ScrollRow = 4262
+    Range("N2:N4292").Select
+    Selection.FillDown
+    Range("A1").Select
+    ActiveWindow.ScrollRow = 1
+    
+    Columns("N:N").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlPasteSpecialOperationNone, SkipBlanks:=False, Transpose:=False
+    Application.CutCopyMode = False
+    Range("A1").Select
+End Sub
+Sub 整理1()
+    Columns("G:G").Select
+    Selection.Copy
+    Range("P1").Select
+    ActiveSheet.Paste
+    Application.CutCopyMode = False
+    Columns("U:U").Select
+    Selection.Cut
+    Range("G1").Select
+    ActiveSheet.Paste
+    Range("P1").Select
+    With Selection
+        .FormulaR1C1 = "最终售价"
+        With .Characters.Font
+            .Name = "宋体"
+            .Bold = True
+            .Italic = False
+            .Strikethrough = False
+            .Superscript = False
+            .Subscript = False
+            .ColorIndex = xlColorIndexAutomatic
+            .TintAndShade = 0
+            .Underline = xlUnderlineStyleNone
+            .Size = 10
+        End With
+    End With
+    Columns("L:L").Select
+    Selection.Cut
+    Range("Q1").Select
+    ActiveSheet.Paste
+    Columns("L:L").Select
+    Selection.delete shift:=xlShiftToLeft
+    
+    
+    Columns("bm:bm").Select '条码
+    Selection.Copy
+    Range("q1").Select
+    ActiveSheet.Paste
+  
+    Range("P4293").Select
+    Selection.FormulaR1C1 = "</ul></div></div></div>"
+ End Sub
+Sub 筛选1()
+'二级菜单排序
+'网页单码  开头结尾
+
+    Rows("1:1").Select
+    Selection.AutoFilter
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$X$1", Visible:=False
+    With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("F1"), Order:=xlDescending
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Range("P1").Select
+    With Selection
+        .FormulaR1C1 = "<div class=" & """" & "store_ele_cmnbox store_ele_probox mb10" & """" & "><h2 class=" & """" & "ele_caption" & """" & "><span class=" & """" & "cpt_tit" & """" & ">推荐商品</span></h2><div class=" & """" & "ele_cont" & """" & "><div class=" & """" & "prolist_ctner" & """" & "><ul class=" & """" & "prolist cls list-paddingleft-2" & """" & ">"
+        With .Characters.Font
+            .Name = "Arial"
+            .Bold = False
+            .Italic = False
+            .Strikethrough = False
+            .Superscript = False
+            .Subscript = False
+            .ColorIndex = xlColorIndexAutomatic
+            .TintAndShade = 0
+            .Underline = xlUnderlineStyleNone
+            .Size = 10
+            .Name = "宋体"
+            .Bold = False
+            .Italic = False
+            .Strikethrough = False
+            .Superscript = False
+            .Subscript = False
+            .ColorIndex = xlColorIndexAutomatic
+            .TintAndShade = 0
+            .Underline = xlUnderlineStyleNone
+            .Size = 10
+            .Name = "Arial"
+            .Bold = False
+            .Italic = False
+            .Strikethrough = False
+            .Superscript = False
+            .Subscript = False
+            .ColorIndex = xlColorIndexAutomatic
+            .TintAndShade = 0
+            .Underline = xlUnderlineStyleNone
+            .Size = 10
+        End With
+    End With
+        maxRow = Application.CountA(Range("a:a")) '计算最大使用列数
+        Range("p" & maxRow + 1) = "</ul></div></div></div>"
+       
+     Range("A1").Select
+End Sub
+Sub 整理2()
+    Columns("A:A").AutoFit
+    Columns("Q:Q").AutoFit
+    With Rows("1:1")
+        .EntireRow.Hidden = False
+        .RowHeight = 29
+    End With
+    Rows("1:1").Select
+    Selection.Font.Bold = True
+    Columns("M:M").Select
+    With Selection.Interior
+        .Pattern = xlPatternSolid
+        .ThemeColor = 9
+        .TintAndShade = 0.4
+    End With
+    Columns("J:J").Select
+    With Selection.Interior
+        .Pattern = xlPatternSolid
+        .ThemeColor = 6
+        .TintAndShade = 0.4
+    End With
+    Columns("G:G").Select
+    With Selection.Interior
+        .Pattern = xlPatternSolid
+        .ThemeColor = 10
+        .TintAndShade = 0.6
+    End With
+    Columns("H:H").Select
+    Selection.Cut
+    Columns("G:G").Select
+    Columns("H:H").Cut
+    ActiveSheet.Select Replace:=False
+    Selection.Insert shift:=xlShiftToRight
+    ActiveSheet.Select Replace:=False
+    ActiveSheet.Select Replace:=False
+    Columns("I:I").Select
+    Selection.Cut
+    Range("R1").Select
+    ActiveSheet.Paste
+    Columns("J:J").Select
+    Selection.Cut
+    Columns("H:H").Select
+    Columns("J:J").Cut
+    ActiveSheet.Select Replace:=False
+    Selection.Insert shift:=xlShiftToRight
+    ActiveSheet.Select Replace:=False
+    ActiveSheet.Select Replace:=False
+    Columns("M:M").Select
+    Selection.Cut
+    Range("J1").Select
+    ActiveSheet.Paste
+    Columns("K:K").Select
+    Selection.Cut
+    Range("S1").Select
+    ActiveSheet.Paste
+    Columns("Q:Q").Select
+    Selection.Cut
+    Columns("B:B").Select
+    Columns("Q:Q").Select
+    Selection.Cut
+    Columns("B:B").Select
+    Columns("Q:Q").Cut
+    ActiveSheet.Select Replace:=False
+    Selection.Insert shift:=xlShiftToRight
+    ActiveSheet.Select Replace:=False
+    ActiveSheet.Select Replace:=False
+    Columns("L:L").Select
+    Selection.delete shift:=xlShiftToLeft
+    With Columns("P:P")
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 11.285714
+    End With
+    With Selection
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 40
+    End With
+    With Selection
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 35.57143
+    End With
+    Columns("M:M").Select
+    Selection.delete shift:=xlShiftToLeft
+    Columns("N:N").Select
+    With Columns("D:D")
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 29.714285
+    End With
+    Columns("B:C").Select
+    Selection.EntireColumn.Hidden = True
+    With Columns("D:D")
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 48.714287
+    End With
+    With Columns("D:D")
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 61.57143
+    End With
+    With Columns("D:D")
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 53
+    End With
+    With Columns("M:M")
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 7.285714
+    End With
+    With Columns("M:M")
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 8.571428
+    End With
+    With Columns("O:O")
+        .EntireColumn.Hidden = False
+        .ColumnWidth = 8.714286
+    End With
+    
+    Columns("BK:BK").Select
+    Selection.Cut
+    
+    Range("R1").Select
+    ActiveSheet.Paste
+    
+    Selection.EntireColumn.Hidden = True
+    Selection.EntireColumn.Hidden = True
+    
+    
+    Columns("R:R").Hidden = False
+    Range("A1").Select
+End Sub
+
+Sub 个护彩妆_面部护理_面膜(par As String)
+'模板
+
+    fn = "个护彩妆_面部护理_面膜"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("面部护理"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("面膜/眼膜"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    
+    '排序降序 品牌名H, 一级分类E, 二级分类F, 二级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("H1"), Order:=xlDescending
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+     
+    Rows("1:4293").Select
+    Selection.Copy
+    
+          '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 生活家居_生活日用_洗衣护理(par As String)
+
+    fn = "生活家居_生活日用_洗衣护理"
+ 
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("生活家居"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("生活日用"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("洗衣护理"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+     
+    '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("H1"), Order:=xlDescending
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    Rows("1:4293").Select
+    Selection.Copy
+    
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+     
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+ 
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+    
+End Sub
+
+Sub 个护彩妆_保健用品(par As String)
+    fn = "个护彩妆_保健用品"
+    
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("营养保健"), Operator:=xlFilterValues
+    
+    
+    '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("F1"), Order:=xlDescending
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+     
+     Call 表格格式(fn)
+     
+        Workbooks(fn).Close (True)
+End Sub
+Sub 个护彩妆_面部护理(par As String)
+
+    fn = "个护彩妆_面部护理"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("面部护理"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+    
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '升序.Add Key:=Range("G1"), Order:=xlAscending
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 个护彩妆_身体护理(par As String)
+
+    fn = "个护彩妆_身体护理"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("身体护理"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+    
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            '.Add Key:=Range("G1"), Order:=xlDescending '降序
+            .Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 个护彩妆_面部护理_面霜(par As String)
+
+    fn = "个护彩妆_面部护理_面霜"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("面部护理"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("乳液/面霜"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            '.Add Key:=Range("G1"), Order:=xlDescending '降序
+            .Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 个护彩妆_女性护理_卫生巾护垫(par As String)
+
+   
+    fn = "个护彩妆_女性护理_卫生巾护垫"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("女性护理"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 个护彩妆_保健用品_眼药水(par As String)
+
+    fn = "个护彩妆_保健用品_眼药水"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("营养保健"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("眼部护理"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 生活家居_生活日用_洗手液(par As String)
+     
+    fn = "生活家居_生活日用_洗手液"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("生活家居"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("生活日用"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("洗手液/洗洁精"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 母婴用品_哺乳喂养_哺喂餐具(par As String)
+     
+    fn = "母婴用品_哺乳喂养_哺喂餐具"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("哺乳喂养"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("哺喂餐具"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            '.Add Key:=Range("G1"), Order:=xlDescending '降序
+            .Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 母婴用品_哺乳喂养(par As String)
+
+       fn = "母婴用品_哺乳喂养"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("哺乳喂养"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            '.Add Key:=Range("G1"), Order:=xlDescending '降序
+            .Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+End Sub
+Sub 母婴用品_哺乳喂养_奶瓶奶嘴(par As String)
+     
+    fn = "母婴用品_哺乳喂养_奶瓶奶嘴"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("哺乳喂养"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("奶瓶", "奶嘴"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            '.Add Key:=Range("G1"), Order:=xlDescending '降序
+            .Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 母婴用品_哺乳喂养_哺喂收纳(par As String)
+     
+    fn = "母婴用品_哺乳喂养_哺喂收纳"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("哺乳喂养"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("哺喂收纳"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            '.Add Key:=Range("G1"), Order:=xlDescending '降序
+            .Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+        
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 母婴用品_哺乳喂养_水壶水杯(par As String)
+     
+    fn = "母婴用品_哺乳喂养_水壶水杯"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("哺乳喂养"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("水壶/水杯"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            '.Add Key:=Range("G1"), Order:=xlDescending '降序
+            .Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 母婴用品_儿童玩具(par As String)
+     
+    fn = "母婴用品_儿童玩具"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("儿童玩具"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("益智玩具", "有声玩具", "玩具收纳", "其他玩具"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 母婴用品_洗护清洁(par As String)
+     
+    fn = "母婴用品_洗护清洁"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("洗护清洁"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 母婴用品_妈妈专区(par As String)
+     
+    fn = "母婴用品_妈妈专区"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("妈妈专区"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 母婴用品_尿裤湿巾(par As String)
+     
+    fn = "母婴用品_尿裤湿巾"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("尿裤湿巾"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 母婴用品_寝具服饰(par As String)
+     
+    fn = "母婴用品_寝具服饰"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("母婴用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("寝具服饰"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 个护彩妆_洗发护发(par As String)
+     
+    fn = "个护彩妆_洗发护发"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("洗发护发"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 个护彩妆_男士护理(par As String)
+     
+    fn = "个护彩妆_男士护理"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("男士护理"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 个护彩妆_美容工具(par As String)
+     
+    fn = "个护彩妆_美容工具"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("美容工具"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 个护彩妆_口腔护理(par As String)
+     
+     fn = "个护彩妆_口腔护理"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("口腔护理"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+End Sub
+    
+    
+Sub 个护彩妆_缤纷彩妆(par As String)
+     
+    fn = "个护彩妆_缤纷彩妆"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("个护彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("缤纷彩妆"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 生活家居_生活日用_整理收纳(par As String)
+     
+    fn = "生活家居_生活日用_整理收纳"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("生活家居"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("生活日用"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("整理收纳"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 生活家居_生活日用_卫生纸纸巾(par As String)
+     
+    fn = "生活家居_生活日用_卫生纸纸巾"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("生活家居"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("生活日用"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("卫生纸/纸巾"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 生活家居_生活日用_驱虫防虫(par As String)
+     
+    fn = "生活家居_生活日用_驱虫防虫"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("生活家居"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("生活日用"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("驱虫/防虫"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 生活家居_生活日用_口罩(par As String)
+     
+    fn = "生活家居_生活日用_口罩"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("生活家居"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("生活日用"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("口罩"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 生活家居_生活日用_洁厕抗菌(par As String)
+     
+    fn = "生活家居_生活日用_洁厕抗菌"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("生活家居"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("生活日用"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("洁厕抗菌"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 生活家居_厨卫用品(par As String)
+     
+    fn = "生活家居_厨卫用品"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("生活家居"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("厨卫用品"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+     
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 生活家居_汽车生活(par As String)
+     
+    fn = "生活家居_汽车生活"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("生活家居"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("汽车生活"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+
+Sub 时尚服饰_女袜(par As String)
+     
+    fn = "时尚服饰_女袜"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("时尚服饰"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("袜子/配件"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+Sub 绘画用品(par As String)
+     
+    fn = "绘画用品"
+    Rows("1:1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$1", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:=Array("电脑办公"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:=Array("办公文具"), Operator:=xlFilterValues
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$R$4293", Visible:=False
+
+
+
+     '排序降序 品牌名H, 一级分类E, 二级分类F, 三级分类G
+     With ActiveSheet.AutoFilter.Sort
+        With .SortFields
+            .Clear
+            .Add Key:=Range("G1"), Order:=xlDescending '降序
+            '.Add Key:=Range("G1"), Order:=xlAscending '升序
+        End With
+        .Header = xlYes
+        .MatchCase = False
+        .SortMethod = xlPinYin
+        .Orientation = xlSortColumns
+        .Apply
+    End With
+    Application.CutCopyMode = False
+    
+    Rows("1:4293").Select
+    Selection.Copy
+       '计算筛选最大使用列数
+     maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+     fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+  
+    
+  If IsFileExists(fn) = True Then
+    ' 文件存在时的处理
+
+        Workbooks.Open Filename:=fn, AddToMru:=True
+        ActiveSheet.Paste
+       
+    Else
+    
+    ' 文件不存在时的处理
+    ' 新建 复制
+        Workbooks.Add
+        ActiveWorkbook.CustomDocumentProperties.Add Name:="KSOProductBuildVer", LinkToContent:=False, Type:=4, Value:="2052-10.1.0.6393"
+        Application.RecentFiles.Add Name:=fn
+        ActiveWorkbook.SaveAs Filename:=fn, AccessMode:=xlNoChange, ConflictResolution:=1, AddToMru:=-1
+        ActiveSheet.Paste
+        
+    End If
+    
+    Call 表格格式(fn)
+    
+    Workbooks(fn).Close (True)
+
+End Sub
+  </pre>
+
+</div>
+
+</body>
+</html>
