@@ -196,11 +196,25 @@ End Sub
 Sub 填加图片()
     On Error Resume Next
     Dim oRow As Integer
-    maxRow = Application.CountA(Range("a:a"))
+    Dim maxRow As Long
+
+    maxRow = Application.CountA(Range("A:A"))
+
     For oRow = 2 To maxRow
+        ' 图片地址 VLOOKUP
         Cells(oRow, 12).Value = "=VLOOKUP(""" & Cells(oRow, 2) & """,img!A:B,2,0)"
-        Cells(oRow, 13).FormulaR1C1 = "<li><div class=""img""><a target=""_blank"" href=""http://www.kjt.com/product/detail/" & Cells(oRow, 2) & """><img src=""" & Cells(oRow, 12) & """></a></div><p class=""tit""><a target=""_blank"" href=""http://www.kjt.com/product/detail/" & Cells(oRow, 2) & """>" & Cells(oRow, 3) & "</a></p><p><span class=""price price14"">" & Cells(oRow, 17) & "</span><span class=""ml10 price_old price_old_87""><s style=""display:inline-block;margin-left:-9px;width:8px;""></s>" & Format((Cells(oRow, 7) * 1.2), "fixed") & "</span></p></li>"
-    Next
+
+        ' 商品 HTML 片段
+        Cells(oRow, 13).Value = _
+            "<li>" & _
+            "<div class=""img""><a target=""_blank"" href=""http://www.kjt.com/product/detail/" & Cells(oRow, 2) & """><img src=""" & Cells(oRow, 12) & """></a></div>" & _
+            "<p class=""tit""><a target=""_blank"" href=""http://www.kjt.com/product/detail/" & Cells(oRow, 2) & """>" & Cells(oRow, 3) & "</a></p>" & _
+            "<p>" & _
+            "<span class=""price price14"">" & Cells(oRow, 17) & "</span>" & _
+            "<span class=""ml10 price_old price_old_87""><s style=""display:inline-block;margin-left:-9px;width:8px;""></s>" & Format(Cells(oRow, 7) * 1.2, "fixed") & "</span>" & _
+            "</p>" & _
+            "</li>"
+    Next oRow
 End Sub
 
 Sub 整理()
