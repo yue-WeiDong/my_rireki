@@ -43,7 +43,1113 @@
   <h1 class="mt-2">📄 excel_vba案例2</h1>
 
   <pre>
+excel数据筛选.txt
+Excel商品数据处理的VBA宏集合，主要功能如下：
+数据清洗：删除无关列、过滤无效数据（价格为0、下架商品）
+价格管理：从外部表格提取活动价和成本价（如"活动&成本"、"限时设置"等工作表），计算最终售价
+分类筛选：按商品类别（母婴、美妆、个护等）自动筛选并导出独立文件
+网页代码生成：为商品生成HTML代码片段，可直接用于网站展示
+统计功能：按一级/二级分类统计商品数量
+格式优化：统一行高、列宽、字体和颜色标记
+文件管理：自动创建带时间戳的备份文件，避免覆盖原始数据
 
+Sub group()
+    Call 删除列: Call delete: Call 活动价: Call 活动价格合成: Call 填加图片: Call 整理: Call 分类统计: Call 加入网址: Call 成本价: Call 活动价1: Call 整理1: Call 筛选1: Call 整理2
+End Sub
+
+Sub con_01()
+    t1 = "0619_0621"
+    t2 = "0622_0625"
+    t = t1: n1 = "a1_母婴_左侧_" & t & "_": n2 = "a2_母婴_右侧_" & t & "_": n3 = "a3_美妆_左侧_" & t & "_": n4 = "a4_美妆_右侧_" & t & "_": n5 = "a5_保健_中上_" & t & "_": n6 = "a6_日用_中上_" & t & "_"
+    Call 母婴用品_哺乳喂养_水壶水杯((n1)): Call 母婴用品_洗护清洁((n2)): Call 个护彩妆_洗发护发((n3))
+    Call 个护彩妆_面部护理((n4)): Call 个护彩妆_保健用品((n5)): Call 生活家居_生活日用_洗衣护理((n6))
+    t = t2: n1 = "b1_母婴_左侧_" & t & "_": n2 = "b2_母婴_右侧_" & t & "_": n3 = "b3_美妆_左侧_" & t & "_": n4 = "b4_美妆_右侧_" & t & "_": n5 = "b5_保健_中上_" & t & "_": n6 = "b6_日用_中上_" & t & "_"
+    Call 母婴用品_哺乳喂养_哺喂餐具((n1)): Call 母婴用品_尿裤湿巾((n2)): Call 个护彩妆_身体护理((n3))
+    Call 个护彩妆_女性护理_卫生巾护垫((n4)): Call 个护彩妆_保健用品((n5)): Call 生活家居_生活日用_整理收纳((n6))
+End Sub
+
+Sub c1(): Call 个护彩妆_保健用品: End Sub
+Sub c2(): Call 个护彩妆_身体护理: End Sub
+Sub c3(): Call 个护彩妆_面部护理: End Sub
+Sub c4(): Call 个护彩妆_面部护理_面霜: End Sub
+Sub c5(): Call 个护彩妆_面部护理_面膜: End Sub
+Sub c6(): Call 个护彩妆_女性护理_卫生巾护垫: End Sub
+Sub c7(): Call 个护彩妆_保健用品_眼药水: End Sub
+Sub c8(): Call 母婴用品_哺乳喂养: End Sub
+Sub c9(): Call 母婴用品_哺乳喂养_哺喂餐具: End Sub
+Sub c10(): Call 母婴用品_哺乳喂养_奶瓶奶嘴: End Sub
+Sub c11(): Call 母婴用品_哺乳喂养_水壶水杯: End Sub
+Sub c12(): Call 母婴用品_哺乳喂养_哺喂收纳: End Sub
+Sub c13(): Call 母婴用品_儿童玩具: End Sub
+Sub c14(): Call 母婴用品_妈妈专区: End Sub
+Sub c15(): Call 母婴用品_尿裤湿巾: End Sub
+Sub c16(): Call 母婴用品_寝具服饰: End Sub
+Sub c17(): Call 母婴用品_洗护清洁: End Sub
+Sub c18(): Call 个护彩妆_洗发护发: End Sub
+Sub c19(): Call 个护彩妆_男士护理: End Sub
+Sub c20(): Call 个护彩妆_美容工具: End Sub
+Sub c21(): Call 个护彩妆_口腔护理: End Sub
+Sub c22(): Call 个护彩妆_缤纷彩妆: End Sub
+Sub c23(): Call 生活家居_生活日用_洗手液: End Sub
+Sub c24(): Call 生活家居_生活日用_整理收纳: End Sub
+Sub c25(): Call 生活家居_生活日用_卫生纸纸巾: End Sub
+Sub c26(): Call 生活家居_生活日用_驱虫防虫: End Sub
+Sub c27(): Call 生活家居_生活日用_口罩: End Sub
+Sub c28(): Call 生活家居_生活日用_洁厕抗菌: End Sub
+Sub c29(): Call 生活家居_厨卫用品: End Sub
+Sub c30(): Call 生活家居_生活日用_洗衣护理: End Sub
+Sub c32(): Call 绘画用品: End Sub
+Sub c33(): Call 时尚服饰_女袜: End Sub
+Sub c34(): Call 生活家居_汽车生活: End Sub
+
+Function IsFileExists(ByVal strFileName As String) As Boolean
+    Dim objFileSystem As Object
+    Set objFileSystem = CreateObject("Scripting.FileSystemObject")
+    If objFileSystem.FileExists(strFileName) = True Then
+        IsFileExists = True
+    Else
+        IsFileExists = False
+    End If
+End Function
+
+Function 表格格式(fn)
+    Cells.Select
+    Cells.RowHeight = 15.5
+    Range("A1").Select
+    maxRow = Application.CountA(Range("a:a"))
+End Function
+
+Sub 删除列()
+    Columns("O:O").Select
+    Selection.Copy
+    Range("cc1").Select
+    ActiveSheet.Paste
+    Columns("D:D").Select
+    Selection.Delete Shift:=xlShiftToLeft
+    Selection.Delete Shift:=xlShiftToLeft
+    Columns("G:G").Select
+    Selection.Delete Shift:=xlShiftToLeft
+    Columns("H:J").Select
+    Selection.Delete Shift:=xlShiftToLeft
+    Columns("I:I").Select
+    Selection.Delete Shift:=xlShiftToLeft
+    Columns("J:L").Select
+    Selection.Delete Shift:=xlShiftToLeft
+    Columns("L:L").Select
+    Selection.Delete Shift:=xlShiftToLeft
+    Columns("L:M").Select
+    Selection.Delete Shift:=xlShiftToLeft
+    Range("A1").Select
+End Sub
+
+Sub delete()
+    Selection.AutoFilter
+    ActiveWorkbook.Names.Add Name:="Sheet1!_FilterDatabase", RefersTo:="=Sheet1!$A$1:$K$4064", Visible:=False
+    Range("A1:K4064").AutoFilter Field:=10, Criteria1:=Array("0"), Operator:=xlFilterValues
+    Rows("2:4289").Select
+    Selection.Delete Shift:=xlShiftUp
+    Range("A1:K459").AutoFilter Field:=10
+    Range("A1:K459").AutoFilter Field:=9, Criteria1:=Array("下架", "作废"), Operator:=xlFilterValues
+    Selection.Delete Shift:=xlShiftUp
+    Range("A1:K389").AutoFilter Field:=9
+End Sub
+
+Sub 活动价()
+    Range("N1") = "活动价"
+    Range("N2") = "=IFERROR(VLOOKUP(A2,'活动&成本'!A:R,10,0),"""")"
+    Range("N2").Copy
+    Range("N2:N4292").Select
+    Selection.FillDown
+    Columns("N:N").Copy
+    Selection.PasteSpecial Paste:=xlPasteValues
+    Application.CutCopyMode = False
+
+    Range("O1") = "设置的"
+    Range("O2") = "=IFERROR(VLOOKUP(A2,'限时设置'!B:R,8,0),"""")"
+    Range("O2").Copy
+    Range("O2:O4292").Select
+    Selection.FillDown
+    Columns("O:O").Copy
+    Selection.PasteSpecial Paste:=xlPasteValues
+    Application.CutCopyMode = False
+
+    Columns("G:G").Copy
+    Range("P1").Select
+    ActiveSheet.Paste
+    Columns("P:P").Copy
+    Range("W1").Select
+    ActiveSheet.Paste
+End Sub
+
+Sub 活动价格合成()
+    maxRow = Application.CountA(Range("a:a"))
+    Range("Q1") = "商品售价"
+    Range("Q2") = "=IFERROR(IF(O2="""",P2,TEXT(O2,"".00"")),"""")"
+    Range("Q2").Copy
+    Range("Q2:Q" & maxRow).Select
+    Selection.FillDown
+    Columns("Q:Q").Copy
+    Selection.PasteSpecial Paste:=xlPasteValues
+    Application.CutCopyMode = False
+End Sub
+
+Sub 填加图片()
+    On Error Resume Next
+    Dim oRow As Integer
+    maxRow = Application.CountA(Range("a:a"))
+    For oRow = 2 To maxRow
+        Cells(oRow, 12).Value = "=VLOOKUP(""" & Cells(oRow, 2) & """,img!A:B,2,0)"
+        Cells(oRow, 13).FormulaR1C1 = "<li><div class=""img""><a target=""_blank"" href=""http://www.kjt.com/product/detail/" & Cells(oRow, 2) & """><img src=""" & Cells(oRow, 12) & """></a></div><p class=""tit""><a target=""_blank"" href=""http://www.kjt.com/product/detail/" & Cells(oRow, 2) & """>" & Cells(oRow, 3) & "</a></p><p><span class=""price price14"">" & Cells(oRow, 17) & "</span><span class=""ml10 price_old price_old_87""><s style=""display:inline-block;margin-left:-9px;width:8px;""></s>" & Format((Cells(oRow, 7) * 1.2), "fixed") & "</span></p></li>"
+    Next
+End Sub
+
+Sub 整理()
+    Columns("L:L").Delete Shift:=xlShiftToLeft
+    Columns("P:P").Copy
+    Range("G1").PasteSpecial Paste:=xlPasteValues
+    Columns("P:P").Delete Shift:=xlShiftToLeft
+    Columns("O:O").Delete Shift:=xlShiftToLeft
+    Columns("M:N").EntireColumn.Hidden = True
+    Columns("M:N").AutoFit
+    Columns("L:L").AutoFit
+    Columns("L:L").ColumnWidth = 25
+    Range("A1").Select
+End Sub
+
+Sub 分类统计()
+    Sheets("二级分类").Select
+    Range("B2") = "=COUNTIF(Sheet1!E:E,A2)"
+    Range("B2").AutoFill Destination:=Range("B2:B24")
+    Sheets("一级分类").Select
+    Range("B2") = "=COUNTIF(Sheet1!D:D,A2)"
+    Range("B2").AutoFill Destination:=Range("B2:B7")
+    Sheets("Sheet1").Activate
+End Sub
+
+Sub 加入网址()
+    Columns("M:M").Insert Shift:=xlShiftToRight
+    Range("M1") = "网址"
+    maxRow = Application.CountA(Range("a:a"))
+    For i = 2 To maxRow
+        Cells(i, "M") = "=CONCATENATE(""http://www.kjt.com/product/detail/"",B" & i & ")"
+    Next i
+End Sub
+
+Sub 成本价()
+    Range("O1") = "16成本价"
+    Range("O2") = "=IFERROR(VLOOKUP(A2,'活动&成本'!A:R,11,0),"""")"
+    Range("O2").Copy
+    Range("O2:N4292").Select
+    Selection.FillDown
+    Columns("O:O").Copy
+    Selection.PasteSpecial Paste:=xlPasteValues
+    Application.CutCopyMode = False
+End Sub
+
+Sub 活动价1()
+    Range("N1") = "活动价"
+    Range("N2") = "=IFERROR(VLOOKUP(A2,'活动&成本'!A:R,10,0),"""")"
+    Range("N2").Copy
+    Range("N2:N4292").Select
+    Selection.FillDown
+    Columns("N:N").Copy
+    Selection.PasteSpecial Paste:=xlPasteValues
+    Application.CutCopyMode = False
+End Sub
+
+Sub 整理1()
+    Columns("G:G").Copy
+    Range("P1").PasteSpecial Paste:=xlPasteValues
+    Columns("U:U").Cut
+    Range("G1").PasteSpecial Paste:=xlPasteAll
+    Range("P1") = "最终售价"
+    Columns("L:L").Cut
+    Range("Q1").PasteSpecial Paste:=xlPasteAll
+    Columns("L:L").Delete Shift:=xlShiftToLeft
+    Columns("BM:BM").Copy
+    Range("Q1").PasteSpecial Paste:=xlPasteAll
+    Range("P4293") = "</ul></div></div></div>"
+End Sub
+
+Sub 筛选1()
+    Rows("1:1").AutoFilter
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("F1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    Range("P1") = "<div class=""store_ele_cmnbox store_ele_probox mb10""><h2 class=""ele_caption""><span class=""cpt_tit"">推荐商品</span></h2><div class=""ele_cont""><div class=""prolist_ctner""><ul class=""prolist cls list-paddingleft-2"">"
+    maxRow = Application.CountA(Range("a:a"))
+    Range("P" & maxRow + 1) = "</ul></div></div></div>"
+End Sub
+
+Sub 整理2()
+    Columns("A:A").AutoFit
+    Columns("Q:Q").AutoFit
+    Rows("1:1").RowHeight = 29
+    Rows("1:1").Font.Bold = True
+    Columns("C:C").Interior.ColorIndex = 9
+    Columns("J:J").Interior.ColorIndex = 6
+    Columns("G:G").Interior.ColorIndex = 10
+    Columns("H:H").Cut
+    Columns("G:G").Insert Shift:=xlShiftToRight
+    Columns("I:I").Cut
+    Range("R1").PasteSpecial Paste:=xlPasteAll
+    Columns("J:J").Cut
+    Columns("H:H").Insert Shift:=xlShiftToRight
+    Columns("M:M").Cut
+    Range("J1").PasteSpecial Paste:=xlPasteAll
+    Columns("K:K").Cut
+    Range("S1").PasteSpecial Paste:=xlPasteAll
+    Columns("Q:Q").Cut
+    Columns("B:B").Insert Shift:=xlShiftToRight
+    Columns("L:L").Delete Shift:=xlShiftToLeft
+    Columns("B:C").EntireColumn.Hidden = True
+    Columns("D:D").ColumnWidth = 61
+    Columns("M:M").ColumnWidth = 8
+    Columns("O:O").ColumnWidth = 8
+    Columns("R:R").Hidden = False
+    Range("A1").Select
+End Sub
+
+Sub 个护彩妆_面部护理_面膜(par As String)
+    fn = "个护彩妆_面部护理_面膜"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="面部护理"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="面膜/眼膜"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("H1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 生活家居_生活日用_洗衣护理(par As String)
+    fn = "生活家居_生活日用_洗衣护理"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="生活家居"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="生活日用"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="洗衣护理"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("H1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_保健用品(par As String)
+    fn = "个护彩妆_保健用品"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="营养保健"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("F1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_面部护理(par As String)
+    fn = "个护彩妆_面部护理"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="面部护理"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_身体护理(par As String)
+    fn = "个护彩妆_身体护理"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="身体护理"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlAscending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_面部护理_面霜(par As String)
+    fn = "个护彩妆_面部护理_面霜"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="面部护理"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="乳液/面霜"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlAscending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_女性护理_卫生巾护垫(par As String)
+    fn = "个护彩妆_女性护理_卫生巾护垫"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="女性护理"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_保健用品_眼药水(par As String)
+    fn = "个护彩妆_保健用品_眼药水"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="营养保健"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="眼部护理"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 生活家居_生活日用_洗手液(par As String)
+    fn = "生活家居_生活日用_洗手液"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="生活家居"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="生活日用"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="洗手液/洗洁精"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_哺乳喂养_哺喂餐具(par As String)
+    fn = "母婴用品_哺乳喂养_哺喂餐具"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="哺乳喂养"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="哺喂餐具"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlAscending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_哺乳喂养(par As String)
+    fn = "母婴用品_哺乳喂养"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="哺乳喂养"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlAscending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_哺乳喂养_奶瓶奶嘴(par As String)
+    fn = "母婴用品_哺乳喂养_奶瓶奶嘴"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="哺乳喂养"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("奶瓶", "奶嘴")
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlAscending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_哺乳喂养_哺喂收纳(par As String)
+    fn = "母婴用品_哺乳喂养_哺喂收纳"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="哺乳喂养"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="哺喂收纳"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlAscending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_哺乳喂养_水壶水杯(par As String)
+    fn = "母婴用品_哺乳喂养_水壶水杯"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="哺乳喂养"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="水壶/水杯"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlAscending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_儿童玩具(par As String)
+    fn = "母婴用品_儿童玩具"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="儿童玩具"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:=Array("益智玩具", "有声玩具", "玩具收纳", "其他玩具")
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_洗护清洁(par As String)
+    fn = "母婴用品_洗护清洁"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="洗护清洁"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_妈妈专区(par As String)
+    fn = "母婴用品_妈妈专区"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="妈妈专区"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_尿裤湿巾(par As String)
+    fn = "母婴用品_尿裤湿巾"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="尿裤湿巾"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 母婴用品_寝具服饰(par As String)
+    fn = "母婴用品_寝具服饰"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="母婴用品"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="寝具服饰"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_洗发护发(par As String)
+    fn = "个护彩妆_洗发护发"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="洗发护发"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_男士护理(par As String)
+    fn = "个护彩妆_男士护理"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="男士护理"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_美容工具(par As String)
+    fn = "个护彩妆_美容工具"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="美容工具"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_口腔护理(par As String)
+    fn = "个护彩妆_口腔护理"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="口腔护理"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 个护彩妆_缤纷彩妆(par As String)
+    fn = "个护彩妆_缤纷彩妆"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="个护彩妆"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="缤纷彩妆"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 生活家居_生活日用_整理收纳(par As String)
+    fn = "生活家居_生活日用_整理收纳"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="生活家居"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="生活日用"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="整理收纳"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 生活家居_生活日用_卫生纸纸巾(par As String)
+    fn = "生活家居_生活日用_卫生纸纸巾"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="生活家居"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="生活日用"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="卫生纸/纸巾"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 生活家居_生活日用_驱虫防虫(par As String)
+    fn = "生活家居_生活日用_驱虫防虫"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="生活家居"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="生活日用"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="驱虫/防虫"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 生活家居_生活日用_口罩(par As String)
+    fn = "生活家居_生活日用_口罩"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="生活家居"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="生活日用"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="口罩"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 生活家居_生活日用_洁厕抗菌(par As String)
+    fn = "生活家居_生活日用_洁厕抗菌"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="生活家居"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="生活日用"
+    Range("A1:R4293").AutoFilter Field:=7, Criteria1:="洁厕抗菌"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 生活家居_厨卫用品(par As String)
+    fn = "生活家居_厨卫用品"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="生活家居"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="厨卫用品"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 生活家居_汽车生活(par As String)
+    fn = "生活家居_汽车生活"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="生活家居"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="汽车生活"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 时尚服饰_女袜(par As String)
+    fn = "时尚服饰_女袜"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="时尚服饰"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="袜子/配件"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
+
+Sub 绘画用品(par As String)
+    fn = "绘画用品"
+    Rows("1:1").AutoFilter
+    Range("A1:R4293").AutoFilter Field:=5, Criteria1:="电脑办公"
+    Range("A1:R4293").AutoFilter Field:=6, Criteria1:="办公文具"
+    With ActiveSheet.AutoFilter.Sort
+        .SortFields.Clear
+        .SortFields.Add Key:=Range("G1"), Order:=xlDescending
+        .Header = xlYes
+        .Apply
+    End With
+    maxRow = ActiveSheet.AutoFilter.Range.Columns(1).SpecialCells(xlCellTypeVisible).Count - 1
+    fn = "C:\Users\Administrator\Desktop\floor\" & par & fn & "_" & maxRow & ".xlsx"
+    If IsFileExists(fn) Then
+        Workbooks.Open Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    Else
+        Workbooks.Add
+        ActiveWorkbook.SaveAs Filename:=fn
+        Rows("1:4293").Copy Destination:=ActiveSheet.Rows(1)
+    End If
+    Call 表格格式(fn)
+    Workbooks(fn).Close True
+End Sub
   </pre>
 
 </div>
